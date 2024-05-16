@@ -1,5 +1,6 @@
 import 'package:cmsc_23_project/pages/homepage.dart';
 import 'package:cmsc_23_project/pages/profile.dart';
+import 'package:cmsc_23_project/pages/DonorPage/donor.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -14,10 +15,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Elbi Donation System',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
       initialRoute: Homepage.routename,
       routes: {
         Homepage.routename: (context) => const Homepage(),
         Profile.routename: (context) => const Profile(),
+        Donor.routename: (context) => const Donor(),
       },
     );
   }
