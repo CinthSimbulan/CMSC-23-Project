@@ -1,4 +1,5 @@
 import 'package:cmsc_23_project/pages/homepage.dart';
+import 'package:cmsc_23_project/pages/profile.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
       initialRoute: Homepage.routename,
       routes: {
         Homepage.routename: (context) => const Homepage(),
+        Profile.routename: (context) => const Profile(),
       },
     );
   }
