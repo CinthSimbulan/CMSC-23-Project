@@ -14,14 +14,16 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
-  String? firstname;
-  String? lastname;
-  String? email;
+  String? name;
+  String? username;
+  String? address;
+  String? contact;
   String? password;
   final Map<String, dynamic> details = {
-    "Firstname": "",
-    "Lastname": "",
-    "Email": "",
+    "Name": "",
+    "Username": "",
+    "Address": "",
+    "Contact": ""
   };
 
   @override
@@ -37,9 +39,11 @@ class _SignUpState extends State<SignUpPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   heading,
-                  firstnameField,
-                  lastnameField,
-                  emailField,
+                  nameField,
+                  usernameField,
+                  addressField,
+                  contactField,
+                  // emailField,
                   passwordField,
                   submitButton
                 ],
@@ -57,16 +61,16 @@ class _SignUpState extends State<SignUpPage> {
         ),
       );
 
-  Widget get firstnameField => Padding(
+  Widget get nameField => Padding(
         padding: const EdgeInsets.only(bottom: 30),
         child: TextFormField(
           decoration: const InputDecoration(
               border: OutlineInputBorder(),
-              label: Text("First name"),
-              hintText: "Enter your first name"),
+              label: Text("Name"),
+              hintText: "Enter your name"),
           onSaved: (value) => setState(() {
-            firstname = value;
-            details['Firstname'] = firstname;
+            name = value;
+            details['Name'] = name;
           }),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -77,16 +81,16 @@ class _SignUpState extends State<SignUpPage> {
         ),
       );
 
-  Widget get lastnameField => Padding(
+  Widget get usernameField => Padding(
         padding: const EdgeInsets.only(bottom: 30),
         child: TextFormField(
           decoration: const InputDecoration(
               border: OutlineInputBorder(),
-              label: Text("Last name"),
-              hintText: "Enter your last name"),
+              label: Text("Username"),
+              hintText: "Enter your username"),
           onSaved: (value) => setState(() {
-            lastname = value;
-            details['Lastname'] = lastname;
+            username = value;
+            details['Username'] = username;
           }),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -97,27 +101,69 @@ class _SignUpState extends State<SignUpPage> {
         ),
       );
 
-  Widget get emailField => Padding(
+  Widget get addressField => Padding(
         padding: const EdgeInsets.only(bottom: 30),
         child: TextFormField(
           decoration: const InputDecoration(
               border: OutlineInputBorder(),
-              label: Text("Email"),
-              hintText: "Enter a valid email"),
+              label: Text("Address"),
+              hintText: "Enter your address"),
           onSaved: (value) => setState(() {
-            // assert(EmailValidator.validate(value!),
-            //     "Please enter a valid email format");
-            // email = value;
-            // details['Email'] = email;
+            address = value;
+            details['Address'] = address;
           }),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return "Please enter a valid email format";
+              return "This field is required";
             }
             return null;
           },
         ),
       );
+
+  Widget get contactField => Padding(
+        padding: const EdgeInsets.only(bottom: 30),
+        child: TextFormField(
+          decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              label: Text("Contact no."),
+              hintText: "Enter your Contact Number"),
+          onSaved: (value) => setState(() {
+            contact = value;
+            details['Contact'] = contact;
+          }),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "This field is required";
+            } else if (value.length != 11) {
+              return "Invalid contact number";
+            }
+            return null;
+          },
+        ),
+      );
+
+  // Widget get emailField => Padding(
+  //       padding: const EdgeInsets.only(bottom: 30),
+  //       child: TextFormField(
+  //         decoration: const InputDecoration(
+  //             border: OutlineInputBorder(),
+  //             label: Text("Email"),
+  //             hintText: "Enter a valid email"),
+  //         onSaved: (value) => setState(() {
+  //           assert(EmailValidator.validate(value!),
+  //               "Please enter a valid email format");
+  //           email = value;
+  //           details['Email'] = email;
+  //         }),
+  //         validator: (value) {
+  //           if (value == null || value.isEmpty) {
+  //             return "Please enter a valid email format";
+  //           }
+  //           return null;
+  //         },
+  //       ),
+  //     );
 
   Widget get passwordField => Padding(
         padding: const EdgeInsets.only(bottom: 30),
@@ -144,26 +190,26 @@ class _SignUpState extends State<SignUpPage> {
 
   Widget get submitButton => ElevatedButton(
       onPressed: () async {
-        // if (_formKey.currentState!.validate()) {
-        //   _formKey.currentState!.save();
-        //   print(details);
-        //   CollectionReference todosCollection =
-        //       FirebaseFirestore.instance.collection('users');
-        //   todosCollection.add({
-        //     'firstname': details['Firstname'],
-        //     'lastname': details['Lastname'],
-        //     'email': details['Email'],
-        //   }).then((docRef) {
-        //     String autoId = docRef.id;
-        //     docRef.update({'id': autoId});
-        //   });
-        //   await context
-        //       .read<UserAuthProvider>()
-        //       .authService
-        //       .signUp(email!, password!);
-        //   // check if the widget hasn't been disposed of after an asynchronous action
-        //   if (mounted) Navigator.pop(context);
-        // }
+        if (_formKey.currentState!.validate()) {
+          _formKey.currentState!.save();
+          print(details);
+          //     CollectionReference todosCollection =
+          //         FirebaseFirestore.instance.collection('users');
+          //     todosCollection.add({
+          //       'firstname': details['Firstname'],
+          //       'lastname': details['Lastname'],
+          //       'email': details['Email'],
+          //     }).then((docRef) {
+          //       String autoId = docRef.id;
+          //       docRef.update({'id': autoId});
+          //     });
+          //     await context
+          //         .read<UserAuthProvider>()
+          //         .authService
+          //         .signUp(email!, password!);
+          //     // check if the widget hasn't been disposed of after an asynchronous action
+          //     if (mounted) Navigator.pop(context);
+        }
       },
       child: const Text("Sign Up"));
 }
