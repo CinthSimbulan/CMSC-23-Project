@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 // import 'package:email_validator/email_validator.dart';
 
 class SignUpPage extends StatefulWidget {
+  static const routename = '/sign-up';
   const SignUpPage({super.key});
 
   @override

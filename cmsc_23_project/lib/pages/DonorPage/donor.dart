@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class Donor extends StatefulWidget {
+  static const routename = '/donor';
   const Donor({super.key});
 
   @override
