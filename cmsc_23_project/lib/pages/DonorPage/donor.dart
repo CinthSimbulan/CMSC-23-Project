@@ -81,7 +81,8 @@ class _DonorState extends State<Donor> {
 
                             //Mode of Delivery: pickup or dropoff
                             Padding(
-                                padding: EdgeInsets.symmetric(vertical: 55),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 55),
                                 child: Column(
                                   children: [
                                     const Text("Mode of Delivery: ",
@@ -98,7 +99,8 @@ class _DonorState extends State<Donor> {
 
                             //Weight of items
                             Padding(
-                                padding: EdgeInsets.symmetric(vertical: 55),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 55),
                                 child: Column(
                                   children: [
                                     const Text("Weight of Items to Donate: ",
@@ -115,7 +117,8 @@ class _DonorState extends State<Donor> {
 
                             //Photo of item
                             Padding(
-                                padding: EdgeInsets.symmetric(vertical: 55),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 55),
                                 child: Column(
                                   children: [
                                     const Text("Photo of Item: ",
@@ -134,7 +137,8 @@ class _DonorState extends State<Donor> {
 
                             //date and time for delivery
                             Padding(
-                                padding: EdgeInsets.symmetric(vertical: 55),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 55),
                                 child: Column(
                                   children: [
                                     const Text("Date and Time of Delivery: ",
@@ -152,7 +156,8 @@ class _DonorState extends State<Donor> {
 
                             //address (can save multiple address, for pickup))
                             Padding(
-                                padding: EdgeInsets.symmetric(vertical: 55),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 55),
                                 child: Column(
                                   children: [
                                     const Text("Address: ",
@@ -169,7 +174,8 @@ class _DonorState extends State<Donor> {
 
                             //contact no (for pickup)
                             Padding(
-                                padding: EdgeInsets.symmetric(vertical: 55),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 55),
                                 child: Column(
                                   children: [
                                     const Text("Contact Number: ",
@@ -193,7 +199,7 @@ class _DonorState extends State<Donor> {
                                         fontStyle: FontStyle.italic,
                                         fontSize: 15))),
 
-                            SizedBox(height: 50),
+                            const SizedBox(height: 50),
                             //cancel donation button
                             OutlinedButton(
                                 onPressed: () {},

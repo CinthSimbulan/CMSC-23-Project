@@ -1,3 +1,4 @@
+import 'package:cmsc_23_project/pages/SignInPage/signin.dart';
 import 'package:cmsc_23_project/pages/homepage.dart';
 import 'package:cmsc_23_project/pages/profile.dart';
 import 'package:cmsc_23_project/pages/DonorPage/donor.dart';
@@ -16,14 +17,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Elbi Donation System',
       theme: ThemeData(
+        primarySwatch: Colors.blue,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      initialRoute: Homepage.routename,
+      initialRoute: SignInPage.routename,
       routes: {
         Homepage.routename: (context) => const Homepage(),
         Profile.routename: (context) => const Profile(),
         Donor.routename: (context) => const Donor(),
+        SignInPage.routename: (context) => const SignInPage(),
       },
     );
   }
