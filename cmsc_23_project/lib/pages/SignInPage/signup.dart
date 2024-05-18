@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cmsc_23_project/pages/DonorPage/image.dart';
 import 'package:cmsc_23_project/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:email_validator/email_validator.dart';
 
@@ -19,7 +23,11 @@ class _SignUpState extends State<SignUpPage> {
   String? address;
   String? contact;
   String? password;
+  bool isOrganization = false;
+  String? organizationName;
+  File? photo;
   final Map<String, dynamic> details = {
+    "Type": "Donor",
     "Name": "",
     "Username": "",
     "Address": "",
@@ -43,8 +51,10 @@ class _SignUpState extends State<SignUpPage> {
                   usernameField,
                   addressField,
                   contactField,
-                  // emailField,
                   passwordField,
+                  organizationCheckbox,
+                  if (isOrganization) organizationNameField,
+                  if (isOrganization) proofImage,
                   submitButton
                 ],
               ),
@@ -171,6 +181,54 @@ class _SignUpState extends State<SignUpPage> {
         ),
       );
 
+  Widget get organizationCheckbox => CheckboxListTile(
+        title: const Text('Are you an organization?'),
+        value: isOrganization,
+        onChanged: (bool? value) {
+          setState(() {
+            isOrganization = value!;
+          });
+        },
+      );
+
+  Widget get organizationNameField => Padding(
+        padding: const EdgeInsets.only(bottom: 30),
+        child: TextFormField(
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            label: Text("Organization Name"),
+            hintText: "Enter organization name",
+          ),
+          enabled: isOrganization,
+          onSaved: (value) => setState(() {
+            organizationName = value;
+            details['Organization'] = organizationName;
+            details['Type'] = "Organization";
+          }),
+          validator: (value) {
+            if (isOrganization && (value == null || value.isEmpty)) {
+              return "This field is required for organizations";
+            }
+            return null;
+          },
+        ),
+      );
+
+  Widget get proofImage => Padding(
+      padding: const EdgeInsets.symmetric(vertical: 55),
+      child: Column(
+        children: [
+          const Text("Photo of Item: ",
+              style: TextStyle(fontStyle: FontStyle.italic, fontSize: 15)),
+          const SizedBox(
+            height: 10,
+          ),
+          PhotoPicker(
+            callback: (value) => setState(() => photo = value),
+          ),
+        ],
+      ));
+
   Widget get submitButton => ElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
@@ -179,10 +237,12 @@ class _SignUpState extends State<SignUpPage> {
           CollectionReference usersCollection =
               FirebaseFirestore.instance.collection('users');
           usersCollection.add({
+            'type': details['Type'],
             'name': details['Name'],
             'username': details['Username'],
             'address': details['Address'],
             'contactno': details['Contact'],
+            if (isOrganization) 'organization_name': details['Organization'],
           }).then((docRef) {
             String autoId = docRef.id;
             docRef.update({'id': autoId});
@@ -192,7 +252,14 @@ class _SignUpState extends State<SignUpPage> {
               .authService
               .signUp(email!, password!);
           // check if the widget hasn't been disposed of after an asynchronous action
-          if (mounted) Navigator.pop(context);
+          if (mounted) {
+            // It's safe to update the state or call setState()
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                  content: Text('Sign up successful. Logging you in')),
+            );
+            Navigator.pop(context);
+          }
         }
       },
       child: const Text("Sign Up"));
