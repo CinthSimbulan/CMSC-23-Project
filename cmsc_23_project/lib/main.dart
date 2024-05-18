@@ -1,4 +1,5 @@
 import 'package:cmsc_23_project/pages/SignInPage/signin.dart';
+import 'package:cmsc_23_project/pages/SignInPage/loadingpage.dart';
 import 'package:cmsc_23_project/pages/homepage.dart';
 import 'package:cmsc_23_project/pages/profile.dart';
 import 'package:cmsc_23_project/pages/DonorPage/donor.dart';
@@ -38,12 +39,13 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      initialRoute: SignInPage.routename,
+      initialRoute: Loadingpage.routename,
       routes: {
         Homepage.routename: (context) => const Homepage(),
         Profile.routename: (context) => const Profile(),
         Donor.routename: (context) => const Donor(),
         SignInPage.routename: (context) => const SignInPage(),
+        Loadingpage.routename: (context) => const Loadingpage()
       },
     );
   }

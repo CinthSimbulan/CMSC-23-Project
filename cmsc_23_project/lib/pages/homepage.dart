@@ -1,4 +1,7 @@
+import 'package:cmsc_23_project/pages/profile.dart';
+import 'package:cmsc_23_project/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class Homepage extends StatefulWidget {
   static const routename = '/home';
@@ -39,7 +42,10 @@ class _HomepageState extends State<Homepage> {
                       size: 30,
                     ),
                     onPressed: () {
-                      print("profile");
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Profile()));
                     }),
                 Expanded(
                   child: Text(
@@ -54,7 +60,7 @@ class _HomepageState extends State<Homepage> {
                   child: Center(
                     child: GestureDetector(
                       onTap: () {
-                        print("logout");
+                        context.read<UserAuthProvider>().signOut();
                       },
                       child: const Text(
                         'logout',
