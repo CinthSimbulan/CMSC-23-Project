@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
-// import '../providers/auth_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:cmsc_23_project/providers/auth_provider.dart';
 
 import 'signup.dart';
 
@@ -96,22 +96,22 @@ class _SignInPageState extends State<SignInPage> {
   Widget get submitButton => ElevatedButton(
       onPressed: () async {
         if (_formKey.currentState!.validate()) {
-          // _formKey.currentState!.save();
-          // String? message = await context
-          //     .read<UserAuthProvider>()
-          //     .authService
-          //     .signIn(email!, password!);
-          // print(message);
-          // print(showSignInErrorMessage);
+          _formKey.currentState!.save();
+          String? message = await context
+              .read<UserAuthProvider>()
+              .authService
+              .signIn(email!, password!);
+          print(message);
+          print(showSignInErrorMessage);
 
-          // setState(() {
-          //   // (message != null && message.isNotEmpty)
-          //   if (message.isNotEmpty) {
-          //     showSignInErrorMessage = true;
-          //   } else {
-          //     showSignInErrorMessage = false;
-          //   }
-          // });
+          setState(() {
+            // (message != null && message.isNotEmpty)
+            if (message.isNotEmpty) {
+              showSignInErrorMessage = true;
+            } else {
+              showSignInErrorMessage = false;
+            }
+          });
         }
       },
       child: const Text("Sign In"));

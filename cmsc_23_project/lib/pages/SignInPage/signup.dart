@@ -192,7 +192,7 @@ class _SignUpState extends State<SignUpPage> {
               .authService
               .signUp(email!, password!);
           // check if the widget hasn't been disposed of after an asynchronous action
-          // if (mounted) Navigator.pop(context);
+          if (mounted) Navigator.pop(context);
         }
       },
       child: const Text("Sign Up"));
