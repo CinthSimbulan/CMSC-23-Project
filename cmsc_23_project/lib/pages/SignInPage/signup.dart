@@ -1,9 +1,8 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cmsc_23_project/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
-// import 'package:provider/provider.dart';
-// import 'package:week9_authentication/pages/modal_todo.dart';
-// import '../providers/auth_provider.dart';
-// import 'package:email_validator/email_validator.dart';
+import 'package:provider/provider.dart';
+import 'package:email_validator/email_validator.dart';
 
 class SignUpPage extends StatefulWidget {
   static const routename = '/sign-up';
@@ -16,7 +15,7 @@ class SignUpPage extends StatefulWidget {
 class _SignUpState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
   String? name;
-  String? username;
+  String? email;
   String? address;
   String? contact;
   String? password;
@@ -88,14 +87,16 @@ class _SignUpState extends State<SignUpPage> {
           decoration: const InputDecoration(
               border: OutlineInputBorder(),
               label: Text("Username"),
-              hintText: "Enter your username"),
+              hintText: "Enter a valid email"),
           onSaved: (value) => setState(() {
-            username = value;
-            details['Username'] = username;
+            email = value;
+            details['Username'] = email;
           }),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return "This field is required";
+              return "Please enter a valid email format";
+            } else if (!EmailValidator.validate(value)) {
+              return "Please enter a valid email format";
             }
             return null;
           },
@@ -129,6 +130,7 @@ class _SignUpState extends State<SignUpPage> {
               border: OutlineInputBorder(),
               label: Text("Contact no."),
               hintText: "Enter your Contact Number"),
+          keyboardType: TextInputType.number,
           onSaved: (value) => setState(() {
             contact = value;
             details['Contact'] = contact;
@@ -138,33 +140,13 @@ class _SignUpState extends State<SignUpPage> {
               return "This field is required";
             } else if (value.length != 11) {
               return "Invalid contact number";
+            } else if (!RegExp(r'^09').hasMatch(value)) {
+              return "Invalid contact number. Should start with '09'";
             }
             return null;
           },
         ),
       );
-
-  // Widget get emailField => Padding(
-  //       padding: const EdgeInsets.only(bottom: 30),
-  //       child: TextFormField(
-  //         decoration: const InputDecoration(
-  //             border: OutlineInputBorder(),
-  //             label: Text("Email"),
-  //             hintText: "Enter a valid email"),
-  //         onSaved: (value) => setState(() {
-  //           assert(EmailValidator.validate(value!),
-  //               "Please enter a valid email format");
-  //           email = value;
-  //           details['Email'] = email;
-  //         }),
-  //         validator: (value) {
-  //           if (value == null || value.isEmpty) {
-  //             return "Please enter a valid email format";
-  //           }
-  //           return null;
-  //         },
-  //       ),
-  //     );
 
   Widget get passwordField => Padding(
         padding: const EdgeInsets.only(bottom: 30),
@@ -194,22 +176,23 @@ class _SignUpState extends State<SignUpPage> {
         if (_formKey.currentState!.validate()) {
           _formKey.currentState!.save();
           print(details);
-          //     CollectionReference todosCollection =
-          //         FirebaseFirestore.instance.collection('users');
-          //     todosCollection.add({
-          //       'firstname': details['Firstname'],
-          //       'lastname': details['Lastname'],
-          //       'email': details['Email'],
-          //     }).then((docRef) {
-          //       String autoId = docRef.id;
-          //       docRef.update({'id': autoId});
-          //     });
-          //     await context
-          //         .read<UserAuthProvider>()
-          //         .authService
-          //         .signUp(email!, password!);
-          //     // check if the widget hasn't been disposed of after an asynchronous action
-          //     if (mounted) Navigator.pop(context);
+          CollectionReference usersCollection =
+              FirebaseFirestore.instance.collection('users');
+          usersCollection.add({
+            'name': details['Name'],
+            'username': details['Username'],
+            'address': details['Address'],
+            'contactno': details['Contact'],
+          }).then((docRef) {
+            String autoId = docRef.id;
+            docRef.update({'id': autoId});
+          });
+          await context
+              .read<UserAuthProvider>()
+              .authService
+              .signUp(email!, password!);
+          // check if the widget hasn't been disposed of after an asynchronous action
+          // if (mounted) Navigator.pop(context);
         }
       },
       child: const Text("Sign Up"));
