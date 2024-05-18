@@ -55,7 +55,7 @@ class _ProfileState extends State<Profile> {
           } else {
             Map<String, dynamic> userData =
                 snapshot.data!.docs[0].data() as Map<String, dynamic>;
-
+            details['Type'] = userData['type'] ?? 'No type';
             details['Name'] = userData['name'] ?? 'No name';
             details['Username'] = userData['username'] ?? 'No username';
             details['Address'] = userData['address'] ?? 'No address';
