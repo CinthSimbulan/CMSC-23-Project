@@ -1,13 +1,13 @@
 import 'dart:io';
 
-import 'package:cmsc_23_project/pages/DonorPage/address.dart';
-import 'package:cmsc_23_project/pages/DonorPage/contact.dart';
-import 'package:cmsc_23_project/pages/DonorPage/date&dtime.dart';
-import 'package:cmsc_23_project/pages/DonorPage/dropdown.dart';
-import 'package:cmsc_23_project/pages/DonorPage/image.dart';
-import 'package:cmsc_23_project/pages/DonorPage/itemcategory.dart';
-import 'package:cmsc_23_project/pages/DonorPage/numberinputfield.dart';
-import 'package:cmsc_23_project/pages/DonorPage/textfield.dart';
+import 'package:cmsc_23_project/pages/DonorPage/DonatePage/address.dart';
+import 'package:cmsc_23_project/pages/DonorPage/DonatePage/contact.dart';
+import 'package:cmsc_23_project/pages/DonorPage/DonatePage/date&dtime.dart';
+import 'package:cmsc_23_project/pages/DonorPage/DonatePage/dropdown.dart';
+import 'package:cmsc_23_project/pages/DonorPage/DonatePage/image.dart';
+import 'package:cmsc_23_project/pages/DonorPage/DonatePage/itemcategory.dart';
+import 'package:cmsc_23_project/pages/DonorPage/DonatePage/numberinputfield.dart';
+import 'package:cmsc_23_project/pages/DonorPage/DonatePage/textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 

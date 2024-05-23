@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cmsc_23_project/pages/DonorPage/image.dart';
+import 'package:cmsc_23_project/pages/DonorPage/DonatePage/image.dart';
 import 'package:cmsc_23_project/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
