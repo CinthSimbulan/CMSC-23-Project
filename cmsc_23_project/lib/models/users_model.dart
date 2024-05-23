@@ -6,13 +6,15 @@ class myUser {
   String username;
   String address;
   String contactno;
+  String type;
 
   myUser(
       {required this.id,
       required this.name,
       required this.username,
       required this.address,
-      required this.contactno});
+      required this.contactno,
+      required this.type});
 
   // Factory constructor to instantiate object from json format
   factory myUser.fromJson(Map<String, dynamic> json) {
@@ -21,7 +23,8 @@ class myUser {
         name: json['name'],
         username: json['username'],
         address: json['address'],
-        contactno: json['contactno']);
+        contactno: json['contactno'],
+        type: json['type']);
   }
 
   static List<myUser> fromJsonArray(String jsonData) {
@@ -35,7 +38,8 @@ class myUser {
       'name': item.name,
       'username': item.username,
       'address': item.address,
-      'contactno': item.contactno
+      'contactno': item.contactno,
+      'type': item.type
     };
   }
 }
