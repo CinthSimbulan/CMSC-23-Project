@@ -244,7 +244,7 @@ class _SignUpState extends State<SignUpPage> {
               .authService
               .signUp(email!, password!);
           // check if the widget hasn't been disposed of after an asynchronous action
-          if (message == "success") {
+          if (message == "Success") {
             CollectionReference usersCollection =
                 FirebaseFirestore.instance.collection('users');
             usersCollection.add({
