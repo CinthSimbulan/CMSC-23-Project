@@ -17,6 +17,9 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUpPage> {
+  String? error;
+  bool showErrorMessage = false;
+
   final _formKey = GlobalKey<FormState>();
   String? name;
   String? email;
@@ -55,7 +58,8 @@ class _SignUpState extends State<SignUpPage> {
                   organizationCheckbox,
                   if (isOrganization) organizationNameField,
                   if (isOrganization) proofImage,
-                  submitButton
+                  submitButton,
+                  showErrorMessage ? errorMessage : Container(),
                 ],
               ),
             )),
@@ -234,33 +238,49 @@ class _SignUpState extends State<SignUpPage> {
         if (_formKey.currentState!.validate()) {
           _formKey.currentState!.save();
           print(details);
-          CollectionReference usersCollection =
-              FirebaseFirestore.instance.collection('users');
-          usersCollection.add({
-            'type': details['Type'],
-            'name': details['Name'],
-            'username': details['Username'],
-            'address': details['Address'],
-            'contactno': details['Contact'],
-            if (isOrganization) 'organization_name': details['Organization'],
-          }).then((docRef) {
-            String autoId = docRef.id;
-            docRef.update({'id': autoId});
-          });
-          await context
+
+          String? message = await context
               .read<UserAuthProvider>()
               .authService
               .signUp(email!, password!);
           // check if the widget hasn't been disposed of after an asynchronous action
-          if (mounted) {
-            // It's safe to update the state or call setState()
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text('Sign up successful. Logging you in')),
-            );
-            Navigator.pop(context);
+          if (message == "Success") {
+            CollectionReference usersCollection =
+                FirebaseFirestore.instance.collection('users');
+            usersCollection.add({
+              'type': details['Type'],
+              'name': details['Name'],
+              'username': details['Username'],
+              'address': details['Address'],
+              'contactno': details['Contact'],
+              if (isOrganization) 'organization_name': details['Organization'],
+            }).then((docRef) {
+              String autoId = docRef.id;
+              docRef.update({'id': autoId});
+            });
+            if (mounted) {
+              // It's safe to update the state or call setState()
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text('Sign up successful. Logging you in')),
+              );
+              Navigator.pop(context);
+            }
+          } else {
+            setState(() {
+              error = message;
+              showErrorMessage = true;
+            });
           }
         }
       },
       child: const Text("Sign Up"));
+
+  Widget get errorMessage => Padding(
+        padding: const EdgeInsets.only(bottom: 30),
+        child: Text(
+          error!,
+          style: const TextStyle(color: Colors.red),
+        ),
+      );
 }
