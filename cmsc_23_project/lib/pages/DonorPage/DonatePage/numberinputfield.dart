@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class NumberInputField extends StatefulWidget {
-  final String? title;
+  final int? title;
   final Function(int)? callback;
   final ValueChanged? onChanged;
 
@@ -18,12 +18,9 @@ class _NumberInputFieldState extends State<NumberInputField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      decoration: InputDecoration(
-        border: OutlineInputBorder(),
-      ),
       onChanged: (value) {
         final intValue = int.tryParse(value);
         if (intValue != null) {
@@ -34,6 +31,9 @@ class _NumberInputFieldState extends State<NumberInputField> {
           widget.callback!(inputValue);
         }
       },
+      decoration: InputDecoration(
+        hintText: widget.title.toString(),
+      ),
     );
   }
 }

@@ -1,35 +1,31 @@
 import 'package:flutter/material.dart';
 
 class TextFieldWidget extends StatefulWidget {
-  final Function(String)? callback;
-  final ValueChanged? onChanged;
-  final String? title;
-  const TextFieldWidget({super.key, this.onChanged, this.callback, this.title});
+  final Function(String) callback;
+  final String hintText;
+  final TextEditingController controller;
 
+  const TextFieldWidget(
+      {required this.callback,
+      required this.hintText,
+      super.key,
+      required this.controller});
   @override
   State<TextFieldWidget> createState() => _TextFieldWidgetState();
 }
 
 class _TextFieldWidgetState extends State<TextFieldWidget> {
-  String inputValue = "";
-
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-        // validator: (value) {
-        //   if (inputValue == "") return widget.title;
-        //   return null;
-        // },
-        onChanged: (value) {
-          setState(() {
-            inputValue = value;
-            widget.onChanged?.call(value);
-          });
-          widget.callback!(inputValue);
-        },
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          label: Text(widget.title!),
-        ));
+    return TextField(
+      controller: widget.controller,
+      decoration: InputDecoration(
+        hintText: widget.hintText,
+      ),
+      onSubmitted: (value) {
+        widget.callback(value);
+        widget.controller.clear();
+      },
+    );
   }
 }
