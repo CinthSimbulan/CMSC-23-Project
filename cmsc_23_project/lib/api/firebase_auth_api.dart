@@ -14,14 +14,17 @@ class FirebaseAuthApi {
     return authService.currentUser;
   }
 
-  Future<void> signUp(String email, String password) async {
+  Future<String> signUp(String email, String password) async {
     try {
       await authService.createUserWithEmailAndPassword(
           email: email, password: password);
+      return "Success";
     } on FirebaseException catch (e) {
-      print('Firebase Exception: ${e.code} : ${e.message}');
+      return ('Firebase Exception: ${e.code} : ${e.message}');
+      // print('Firebase Exception: ${e.code} : ${e.message}');
     } catch (e) {
-      print('Error 001: $e');
+      return ('Error 001: $e');
+      // print('Error 001: $e');
     }
   }
 
