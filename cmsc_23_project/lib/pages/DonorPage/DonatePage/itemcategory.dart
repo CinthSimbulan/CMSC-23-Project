@@ -4,7 +4,13 @@ class ItemCategory extends StatefulWidget {
   final Function(bool)? callback;
   final ValueChanged? onChanged;
   final String? category;
-  const ItemCategory({super.key, this.onChanged, this.category, this.callback});
+  bool value;
+  ItemCategory(
+      {super.key,
+      this.onChanged,
+      required this.value,
+      this.category,
+      this.callback});
 
   @override
   State<ItemCategory> createState() => _ItemCategoryState();
@@ -18,10 +24,10 @@ class _ItemCategoryState extends State<ItemCategory> {
     return ListTile(
         title: Text(widget.category!),
         leading: Checkbox(
-          value: widget.callback!(item),
+          value: widget.callback!(widget.value),
           onChanged: (bool? value) {
             setState(() {
-              item = !item;
+              widget.value = !widget.value;
             });
           },
         ));

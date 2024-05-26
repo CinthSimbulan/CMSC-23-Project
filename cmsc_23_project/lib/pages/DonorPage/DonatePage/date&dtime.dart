@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 
 class DateTimePicker extends StatefulWidget {
   final ValueChanged<DateTime> callback;
+  DateTime? selectedDateTime;
 
-  DateTimePicker({required this.callback});
+  DateTimePicker({required this.callback, this.selectedDateTime});
 
   @override
   _DateTimePickerState createState() => _DateTimePickerState();
 }
 
 class _DateTimePickerState extends State<DateTimePicker> {
-  DateTime? _selectedDateTime;
+  // DateTime? _selectedDateTime;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: _selectedDateTime ?? DateTime.now(),
+      initialDate: widget.selectedDateTime ?? DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
@@ -24,12 +25,12 @@ class _DateTimePickerState extends State<DateTimePicker> {
       final TimeOfDay? pickedTime = await showTimePicker(
         context: context,
         initialTime:
-            TimeOfDay.fromDateTime(_selectedDateTime ?? DateTime.now()),
+            TimeOfDay.fromDateTime(widget.selectedDateTime ?? DateTime.now()),
       );
 
       if (pickedTime != null) {
         setState(() {
-          _selectedDateTime = DateTime(
+          widget.selectedDateTime = DateTime(
             pickedDate.year,
             pickedDate.month,
             pickedDate.day,
@@ -37,7 +38,7 @@ class _DateTimePickerState extends State<DateTimePicker> {
             pickedTime.minute,
           );
         });
-        widget.callback(_selectedDateTime!);
+        widget.callback(widget.selectedDateTime!);
       }
     }
   }
@@ -48,9 +49,9 @@ class _DateTimePickerState extends State<DateTimePicker> {
       children: [
         ElevatedButton(
           onPressed: () => _selectDate(context),
-          child: Text(_selectedDateTime == null
+          child: Text(widget.selectedDateTime == null
               ? 'Select Date and Time'
-              : 'Selected: ${_selectedDateTime!.toLocal()}'),
+              : 'Selected: ${widget.selectedDateTime!.toLocal()}'),
         ),
       ],
     );

@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class AddressInput extends StatefulWidget {
   final ValueChanged<List<String>> callback;
+  List<String>? addresses;
 
-  AddressInput({required this.callback});
+  AddressInput({required this.callback, this.addresses});
 
   @override
   _AddressInputState createState() => _AddressInputState();
@@ -11,23 +12,22 @@ class AddressInput extends StatefulWidget {
 
 class _AddressInputState extends State<AddressInput> {
   final TextEditingController _addressController = TextEditingController();
-  List<String> _addresses = [];
 
   void _addAddress() {
     if (_addressController.text.isNotEmpty) {
       setState(() {
-        _addresses.add(_addressController.text);
+        widget.addresses!.add(_addressController.text);
         _addressController.clear();
       });
-      widget.callback(_addresses);
+      widget.callback(widget.addresses!);
     }
   }
 
   void _removeAddress(int index) {
     setState(() {
-      _addresses.removeAt(index);
+      widget.addresses!.removeAt(index);
     });
-    widget.callback(_addresses);
+    widget.callback(widget.addresses!);
   }
 
   @override
@@ -51,10 +51,10 @@ class _AddressInputState extends State<AddressInput> {
         SizedBox(height: 10),
         ListView.builder(
           shrinkWrap: true,
-          itemCount: _addresses.length,
+          itemCount: widget.addresses!.length,
           itemBuilder: (context, index) {
             return ListTile(
-              title: Text(_addresses[index]),
+              title: Text(widget.addresses![index]),
               trailing: IconButton(
                 icon: Icon(Icons.delete),
                 onPressed: () => _removeAddress(index),

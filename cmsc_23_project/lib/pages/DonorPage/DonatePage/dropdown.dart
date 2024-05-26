@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 class ModeOfDelivery extends StatefulWidget {
   final Function(String)? callback;
   final ValueChanged? onChanged;
-  const ModeOfDelivery(this.callback, {super.key, this.onChanged});
+  String value;
+  ModeOfDelivery(this.callback,
+      {super.key, this.onChanged, required this.value});
 
   @override
   State<ModeOfDelivery> createState() => _ModeOfDeliveryState();
@@ -23,11 +25,11 @@ class _ModeOfDeliveryState extends State<ModeOfDelivery> {
         }).toList(),
         onChanged: (value) {
           setState(() {
-            currentValue = value!;
+            widget.value = value!;
             widget.onChanged?.call(value!);
           });
-          widget.callback!(currentValue);
+          widget.callback!(widget.value);
         },
-        value: currentValue);
+        value: widget.value);
   }
 }
