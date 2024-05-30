@@ -1,6 +1,5 @@
 import 'package:cmsc_23_project/models/organization_model.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/donor.dart';
-import 'package:cmsc_23_project/pages/OrganizationPage/organizationHomePage.dart';
 import 'package:cmsc_23_project/pages/profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -259,16 +258,9 @@ class _HomepageState extends State<Homepage> {
 
                 return ListTile(
                   title: Text(donationData['donorId'] ?? 'No name'),
-                  
                   onTap: () {
                     print(donationData.toString());
-                    print(donationData['details']['contactNumber']);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => OrganizationHomepage(
-                              orgId: orgId, donationId: snapshot.data!.docs[index].id, donationData: donationData)),
-                    );
+                    print(donationData['name']);
                   },
                 );
               },

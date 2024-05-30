@@ -6,7 +6,8 @@ class Organization {
   String about;
   String status;
   bool isApproved;
-  Map<String, dynamic>? donations;
+  String imageUrl;
+
   // String? imageUrl; o kaya File! imageFile; for proof of legitimacy
   // collection for donation
   //collection for drives
@@ -20,6 +21,7 @@ class Organization {
     required this.about,
     required this.status,
     required this.isApproved,
+    required this.imageUrl,
   });
 
   // Factory constructor to instantiate object from json format
@@ -30,6 +32,7 @@ class Organization {
       about: json['about'],
       status: json['status'],
       isApproved: json['isApproved'],
+      imageUrl: json['imageUrl'],
       // donations: Map<String, dynamic>.from(json['donations'] ?? {})
     );
   }
@@ -48,6 +51,7 @@ class Organization {
       'about': org.about,
       'status': org.status,
       'isApproved': org.isApproved,
+      'imageUrl': org.imageUrl,
       // 'donations': org.donations,
     };
   }

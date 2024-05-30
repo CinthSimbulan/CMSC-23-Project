@@ -5,15 +5,19 @@ import 'package:cmsc_23_project/pages/DonorPage/DonatePage/address.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/contact.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/date&dtime.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/dropdown.dart';
+import 'package:cmsc_23_project/pages/DonorPage/DonatePage/generate.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/image.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/itemcategory.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/numberinputfield.dart';
+import 'package:cmsc_23_project/pages/DonorPage/DonatePage/qrcode.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/textfield.dart';
+import 'package:cmsc_23_project/providers/image_provider.dart';
 import 'package:cmsc_23_project/providers/organizations_provider.dart';
 import 'package:cmsc_23_project/providers/users_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class Donor extends StatefulWidget {
   static const routename = '/donor';
@@ -313,17 +317,29 @@ class _DonorState extends State<Donor> {
                                   ],
                                 )),
 
-                            if (modeOfDelivery == "Drop-off") ...[
-                              //button that will generate a qr code
-                              OutlinedButton(
-                                  onPressed: () {},
-                                  child: const Text("Generate QR Code",
-                                      style: TextStyle(
-                                          fontStyle: FontStyle.italic,
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 17))),
-                              SizedBox(height: 50),
-                            ],
+                            // if (modeOfDelivery == "Drop-off") ...[
+                            //   //button that will generate a qr code
+                            //   OutlinedButton(
+                            //       onPressed: () {
+                            //         //call generate qr code function
+                            //         // QrCodeWidget(
+                            //         //   data: "hiiiiiiiiiiii",
+                            //         // );
+                            //         //navigate to the qr code screen
+                            //         Navigator.push(
+                            //           context,
+                            //           MaterialPageRoute(
+                            //               builder: (context) =>
+                            //                   QrCodeWidget(data: "EditStatus")),
+                            //         );
+                            //       },
+                            //       child: const Text("Generate QR Code",
+                            //           style: TextStyle(
+                            //               fontStyle: FontStyle.italic,
+                            //               fontWeight: FontWeight.w400,
+                            //               fontSize: 17))),
+                            //   SizedBox(height: 50),
+                            // ],
 
                             //Submit button/donate button
                             OutlinedButton(
@@ -335,6 +351,12 @@ class _DonorState extends State<Donor> {
                                         .any((element) => element['value'])) {
                                       //check if the date and time is not empty
                                       if (selectedDateTime != null) {
+                                        //add the photo of the donation to storage
+                                        String photoUrl = await context
+                                            .read<ImageUploadProvider>()
+                                            .uploadImage(photo!, "donations");
+
+                                        // donation details
                                         Map<String, dynamic> donation = {
                                           'category': itemCategories
                                               .where(
@@ -342,8 +364,8 @@ class _DonorState extends State<Donor> {
                                               .map((e) => e['category'])
                                               .join(', '),
                                           'modeOfDelivery': modeOfDelivery,
-                                          'weight': weight,
-                                          'photo': photo,
+                                          'weight': weight.toString(),
+                                          'photo': photoUrl,
                                           'selectedDateTime': selectedDateTime,
                                           'addresses': addresses,
                                           'contactNumber': contactNumber
@@ -369,24 +391,29 @@ class _DonorState extends State<Donor> {
                                             .read<UsersListProvider>()
                                             .addDonationToUser(
                                                 widget.userId!, donationId);
-                                        //print the donation object
-                                        print(tempDonation);
-                                        print(tempDonation.details['category']);
-                                        print(tempDonation
-                                            .details['modeOfDelivery']);
-                                        print(tempDonation.details['weight']);
-                                        print(tempDonation.details['photo']);
-                                        print(tempDonation
-                                            .details['selectedDateTime']);
-                                        print(
-                                            tempDonation.details['addresses']);
-                                        print(tempDonation
-                                            .details['contactNumber']);
-                                        print("contactnumber $contactNumber");
 
-                                        setState(() {
-                                          validate = true;
-                                        });
+                                        //addd the photo url to the donation details
+                                        context
+                                            .read<OrganizationProvider>()
+                                            .addImageToDonation(
+                                                widget.orgId!, donationId);
+
+                                        print(
+                                            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+                                        print(modeOfDelivery);
+                                        // If modeOfDelivery == drop-off after donating, the app wil redirect to a page where the user can generate a QR code
+                                        // if (modeOfDelivery == "Drop-off") {
+                                        //   print('trueeeeee');
+                                        //   Navigator.push(
+                                        //       context,
+                                        //       MaterialPageRoute(
+                                        //           builder: (context) =>
+                                        //               GenerateQrButtonWidget(
+                                        //                 donationId: donationId,
+                                        //               )));
+                                        // } else {
+                                        //   print("Yawaaaaaaaaaaaaaa");
+                                        // }
                                         Navigator.pop(context);
                                       }
                                     }
@@ -421,55 +448,12 @@ class _DonorState extends State<Donor> {
                                     categoryController
                                         .clear(); //clear text fieldR
                                   });
+                                  Navigator.pop(context);
                                 },
                                 child: const Text("Cancel",
                                     style: TextStyle(
                                         fontStyle: FontStyle.italic,
                                         fontSize: 15))),
-
-                            //show the summary of the donation
-                            //para lang mapakita kung nagana. aalisin din to if iaapply na yung sa database na crud
-                            if (validate == true) ...[
-                              //summary of the donation
-                              Padding(
-                                padding: EdgeInsets.symmetric(vertical: 55),
-                                child: Column(
-                                  children: [
-                                    const Text("Summary of Donation",
-                                        style: TextStyle(
-                                            fontStyle: FontStyle.italic,
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 17)),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    //display the summary of the donation from the created
-                                    Column(
-                                      children: [
-                                        Text(
-                                            "Category: ${itemCategories.where((element) => element['value']).map((e) => e['category']).join(', ')}"),
-                                        Text(
-                                            "Mode of Delivery: $modeOfDelivery"),
-                                        Text("Weight: $weight $weightUnit"),
-                                        if (modeOfDelivery == "Pick-up") ...[
-                                          Text(
-                                              "Address: ${addresses.join(', ')}"),
-                                          Text(
-                                              "Contact Number: $contactNumber"),
-                                        ],
-                                        if (photo != null) ...[
-                                          Image.file(photo!),
-                                        ],
-                                        if (selectedDateTime != null) ...[
-                                          Text(
-                                              "Date and Time of Delivery: $selectedDateTime"),
-                                        ],
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
                           ],
                         ))))
           ],

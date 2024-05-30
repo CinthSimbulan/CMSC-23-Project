@@ -5,6 +5,7 @@ import 'package:cmsc_23_project/pages/homepage.dart';
 import 'package:cmsc_23_project/pages/profile.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/donor.dart';
 import 'package:cmsc_23_project/providers/auth_provider.dart';
+import 'package:cmsc_23_project/providers/image_provider.dart';
 import 'package:cmsc_23_project/providers/organizations_provider.dart';
 import 'package:cmsc_23_project/providers/users_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -23,7 +24,8 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: ((context) => UserAuthProvider())),
         ChangeNotifierProvider(create: ((context) => UsersListProvider())),
-        ChangeNotifierProvider(create: ((context) => OrganizationProvider()))
+        ChangeNotifierProvider(create: ((context) => OrganizationProvider())),
+        ChangeNotifierProvider(create: ((context) => ImageUploadProvider())),
       ],
       child: const MyApp(),
     ),
@@ -48,7 +50,8 @@ class MyApp extends StatelessWidget {
         Homepage.routename: (context) => const Homepage(),
         Profile.routename: (context) => const Profile(),
         Donor.routename: (context) => const Donor(),
-        OrganizationHomepage.routename: (context) => const OrganizationHomepage(),
+        OrganizationHomepage.routename: (context) =>
+            const OrganizationHomepage(),
         SignInPage.routename: (context) => const SignInPage(),
         Loadingpage.routename: (context) => const Loadingpage()
       },
