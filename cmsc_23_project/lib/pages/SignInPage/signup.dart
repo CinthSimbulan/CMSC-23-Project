@@ -1,8 +1,13 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cmsc_23_project/models/donation_model.dart';
+import 'package:cmsc_23_project/models/organization_model.dart';
+import 'package:cmsc_23_project/models/users_model.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/image.dart';
 import 'package:cmsc_23_project/providers/auth_provider.dart';
+import 'package:cmsc_23_project/providers/organizations_provider.dart';
+import 'package:cmsc_23_project/providers/users_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -23,12 +28,14 @@ class _SignUpState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
   String? name;
   String? email;
-  String? address;
+  List<String>? addresses = [];
   String? contact;
   String? password;
   bool isOrganization = false;
   String? organizationName;
   File? photo;
+  final TextEditingController _addressController = TextEditingController();
+
   final Map<String, dynamic> details = {
     "Type": "Donor",
     "Name": "",
@@ -36,6 +43,23 @@ class _SignUpState extends State<SignUpPage> {
     "Address": "",
     "Contact": ""
   };
+
+  // method to add multiple address
+  void _addAddress() {
+    if (_addressController.text.isNotEmpty) {
+      setState(() {
+        addresses!.add(_addressController.text);
+        _addressController.clear();
+      });
+    }
+  }
+
+  //method to delete an address
+  void _removeAddress(int index) {
+    setState(() {
+      addresses!.removeAt(index);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +99,7 @@ class _SignUpState extends State<SignUpPage> {
         ),
       );
 
+  // Name of User
   Widget get nameField => Padding(
         padding: const EdgeInsets.only(bottom: 30),
         child: TextFormField(
@@ -95,6 +120,7 @@ class _SignUpState extends State<SignUpPage> {
         ),
       );
 
+  // Email of User
   Widget get usernameField => Padding(
         padding: const EdgeInsets.only(bottom: 30),
         child: TextFormField(
@@ -117,26 +143,54 @@ class _SignUpState extends State<SignUpPage> {
         ),
       );
 
+  // Address/es of User
   Widget get addressField => Padding(
-        padding: const EdgeInsets.only(bottom: 30),
-        child: TextFormField(
-          decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              label: Text("Address"),
-              hintText: "Enter your address"),
-          onSaved: (value) => setState(() {
-            address = value;
-            details['Address'] = address;
-          }),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return "This field is required";
-            }
-            return null;
-          },
-        ),
-      );
+      padding: const EdgeInsets.only(bottom: 30),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: TextFormField(
+                  controller: _addressController,
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      label: Text('Enter Address')),
+                  onSaved: (value) => setState(() {
+                    _addAddress();
+                  }),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "This field is required";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: _addAddress,
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: addresses!.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text(addresses![index]),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () => _removeAddress(index),
+                ),
+              );
+            },
+          ),
+        ],
+      ));
 
+  //Contact Number of User
   Widget get contactField => Padding(
         padding: const EdgeInsets.only(bottom: 30),
         child: TextFormField(
@@ -162,6 +216,7 @@ class _SignUpState extends State<SignUpPage> {
         ),
       );
 
+  // Password of User
   Widget get passwordField => Padding(
         padding: const EdgeInsets.only(bottom: 30),
         child: TextFormField(
@@ -185,6 +240,7 @@ class _SignUpState extends State<SignUpPage> {
         ),
       );
 
+  // Checkbox for Organization if User is an Organization
   Widget get organizationCheckbox => CheckboxListTile(
         title: const Text('Are you an organization?'),
         value: isOrganization,
@@ -195,6 +251,7 @@ class _SignUpState extends State<SignUpPage> {
         },
       );
 
+  // Organization Name of User
   Widget get organizationNameField => Padding(
         padding: const EdgeInsets.only(bottom: 30),
         child: TextFormField(
@@ -218,11 +275,12 @@ class _SignUpState extends State<SignUpPage> {
         ),
       );
 
+  // Photo for proof of legitimacy of Organization
   Widget get proofImage => Padding(
       padding: const EdgeInsets.symmetric(vertical: 55),
       child: Column(
         children: [
-          const Text("Photo of Item: ",
+          const Text("Proof of Legitimacy: ",
               style: TextStyle(fontStyle: FontStyle.italic, fontSize: 15)),
           const SizedBox(
             height: 10,
@@ -234,48 +292,112 @@ class _SignUpState extends State<SignUpPage> {
       ));
 
   Widget get submitButton => ElevatedButton(
-      onPressed: () async {
-        if (_formKey.currentState!.validate()) {
-          _formKey.currentState!.save();
-          print(details);
+        onPressed: () async {
+          if (_formKey.currentState!.validate()) {
+            _formKey.currentState!.save();
+            print(details);
 
-          String? message = await context
-              .read<UserAuthProvider>()
-              .authService
-              .signUp(email!, password!);
-          // check if the widget hasn't been disposed of after an asynchronous action
-          if (message == "Success") {
-            CollectionReference usersCollection =
-                FirebaseFirestore.instance.collection('users');
-            usersCollection.add({
-              'type': details['Type'],
-              'name': details['Name'],
-              'username': details['Username'],
-              'address': details['Address'],
-              'contactno': details['Contact'],
-              if (isOrganization) 'organization_name': details['Organization'],
-            }).then((docRef) {
-              String autoId = docRef.id;
-              docRef.update({'id': autoId});
-            });
-            if (mounted) {
-              // It's safe to update the state or call setState()
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text('Sign up successful. Logging you in')),
-              );
-              Navigator.pop(context);
+            String? message = await context
+                .read<UserAuthProvider>()
+                .authService
+                .signUp(email!, password!);
+
+            if (message == "Success") {
+              if (isOrganization) {
+                Map<String, dynamic> tempDetails = {
+                  'category': "Food",
+                  'modeOfDelivery': "modeOfDelivery",
+                  'weight': "weight",
+                  'photo': "photo",
+                  'selectedDateTime': "selectedDateTime",
+                  'addresses': "addresses",
+                  'contactNumber': "contactNumber"
+                };
+
+                // Donations tempDonation = Donations(
+                //     status: "Pending", details: tempDetails, donorId: "");
+
+                Organization tempOrg = Organization(
+                    name: organizationName!,
+                    about: "about",
+                    status: "Open",
+                    isApproved: false);
+
+                //Add org to the 'organizations' collection
+                String orgId =
+                    await context.read<OrganizationProvider>().addOrg(tempOrg);
+
+                //Add user to the 'users' collection with the org id
+                myUser tempUser = myUser(
+                  name: details['Name'],
+                  username: details['Username'],
+                  addresses: addresses!,
+                  contactno: details['Contact'],
+                  type: details['Type'],
+                  orgDetails: {
+                    'name': organizationName,
+                    'reference': orgId,
+                    'isApproved': false
+                  },
+                );
+
+                if (mounted) {
+                  context.read<UsersListProvider>().addUser(tempUser);
+                }
+              } else {
+                //user is a donor
+                //create an instance of user based on the input of the user
+                myUser tempUser = myUser(
+                  name: details['Name'],
+                  username: details['Username'],
+                  addresses: addresses!,
+                  contactno: details['Contact'],
+                  type: details['Type'],
+                );
+                if (mounted) {
+                  context.read<UsersListProvider>().addUser(
+                      tempUser); //add user using the method in provider
+                }
+              }
+
+              // if user is an organization, add organization sa org collections
+
+              // !! Eto yung old method na pag add ng user sa firestore, ginawamit ko lang si provider and api para modularized
+              // Uncomment and adjust the following block if using Firestore
+              // CollectionReference usersCollection =
+              //     FirebaseFirestore.instance.collection('users');
+              // usersCollection.add({
+              //   'type': details['Type'],
+              //   'name': details['Name'],
+              //   'username': details['Username'],
+              //   'address': details['Address'],
+              //   'contactno': details['Contact'],
+              //   if (isOrganization)
+              //     'organization_name': details['Organization'],
+              // }).then((docRef) {
+              //   String autoId = docRef.id;
+              //   docRef.update({'id': autoId});
+              // });
+
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Sign up successful. Logging you in')),
+                );
+                Navigator.pop(context);
+              }
+            } else {
+              print('error');
+              setState(() {
+                error = message;
+                showErrorMessage = true;
+              });
             }
-          } else {
-            setState(() {
-              error = message;
-              showErrorMessage = true;
-            });
           }
-        }
-      },
-      child: const Text("Sign Up"));
-
+        },
+        child: const Text("Sign Up"),
+      );
+  // Error Message
   Widget get errorMessage => Padding(
         padding: const EdgeInsets.only(bottom: 30),
         child: Text(

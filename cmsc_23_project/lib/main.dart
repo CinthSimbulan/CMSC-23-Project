@@ -1,9 +1,12 @@
+import 'dart:js';
+
 import 'package:cmsc_23_project/pages/SignInPage/signin.dart';
 import 'package:cmsc_23_project/pages/SignInPage/loadingpage.dart';
 import 'package:cmsc_23_project/pages/homepage.dart';
 import 'package:cmsc_23_project/pages/profile.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/donor.dart';
 import 'package:cmsc_23_project/providers/auth_provider.dart';
+import 'package:cmsc_23_project/providers/organizations_provider.dart';
 import 'package:cmsc_23_project/providers/users_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +23,8 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: ((context) => UserAuthProvider())),
+        ChangeNotifierProvider(create: ((context) => UsersListProvider())),
+        ChangeNotifierProvider(create: ((context) => OrganizationProvider()))
       ],
       child: const MyApp(),
     ),
