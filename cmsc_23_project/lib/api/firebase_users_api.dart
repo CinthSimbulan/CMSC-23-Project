@@ -1,17 +1,13 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as Path;
 
 class FirebaseUserAPI {
   static final FirebaseFirestore db = FirebaseFirestore.instance;
+  static final FirebaseStorage storage = FirebaseStorage.instance;
 
-  // Future<String> addTodo(Map<String, dynamic> todo) async {
-  //   try {
-  //     await db.collection("todos").add(todo);
-
-  //     return "Successfully added!";
-  //   } on FirebaseException catch (e) {
-  //     return "Error in ${e.code}: ${e.message}";
-  //   }
-  // }
   Future<String> addUser(Map<String, dynamic> user) async {
     try {
       await db.collection("users").add(user);
@@ -66,23 +62,31 @@ class FirebaseUserAPI {
     }
   }
 
-  // Future<String> editTodo(String id, String title) async {
-  //   try {
-  //     await db.collection("todos").doc(id).update({"title": title});
+  Future<String?> uploadImage(File file, String folderPath) async {
+    try {
+      String fileName = Path.basename(file.path);
+      Reference ref = storage.ref('org_proof_of_legitimacy/$fileName');
+      if (folderPath == 'donations') {
+        ref = storage.ref('donations/$fileName');
+      }
 
-  //     return "Successfully edited!";
-  //   } on FirebaseException catch (e) {
-  //     return "Error in ${e.code}: ${e.message}";
-  //   }
-  // }
+      await ref.putFile(file);
+      String downloadURL = await ref.getDownloadURL();
+      return downloadURL;
+    } on FirebaseException catch (e) {
+      print('Error occurred while uploading the file: $e');
+      return null;
+    }
+  }
 
-  // Future<String> toggleStatus(String id, bool value) async {
-  //   try {
-  //     await db.collection("todos").doc(id).update({"completed": value});
-
-  //     return "Successfully toggled!";
-  //   } on FirebaseException catch (e) {
-  //     return "Error in ${e.code}: ${e.message}";
-  //   }
-  // }
+  Future<void> addImageReference(String url, String fileName) async {
+    try {
+      await db.collection('images').add({
+        'url': url,
+        'fileName': fileName,
+      });
+    } catch (e) {
+      print('Error occurred while adding the reference to Firestore: $e');
+    }
+  }
 }

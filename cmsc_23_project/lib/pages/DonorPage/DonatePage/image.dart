@@ -39,7 +39,7 @@ class _PhotoPickerState extends State<PhotoPicker> {
           children: [
             ElevatedButton(
               onPressed: () => _pickImage(ImageSource.camera),
-              child: const Text('Take Photo'),
+              child: const Text('Take a Photo'),
             ),
             const SizedBox(
               width: 10,
