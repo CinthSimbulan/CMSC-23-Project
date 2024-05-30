@@ -1,3 +1,4 @@
+import 'package:cmsc_23_project/pages/OrganizationPage/organizationHomePage.dart';
 import 'package:cmsc_23_project/pages/SignInPage/signin.dart';
 import 'package:cmsc_23_project/pages/SignInPage/loadingpage.dart';
 import 'package:cmsc_23_project/pages/homepage.dart';
@@ -49,6 +50,8 @@ class MyApp extends StatelessWidget {
         Homepage.routename: (context) => const Homepage(),
         Profile.routename: (context) => const Profile(),
         Donor.routename: (context) => const Donor(),
+        OrganizationHomepage.routename: (context) =>
+            const OrganizationHomepage(),
         SignInPage.routename: (context) => const SignInPage(),
         Loadingpage.routename: (context) => const Loadingpage()
       },

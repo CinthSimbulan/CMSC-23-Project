@@ -402,19 +402,19 @@ class _DonorState extends State<Donor> {
                                             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                                         print(modeOfDelivery);
                                         // If modeOfDelivery == drop-off after donating, the app wil redirect to a page where the user can generate a QR code
-                                        if (modeOfDelivery == "Drop-off") {
-                                          print('trueeeeee');
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      GenerateQrButtonWidget(
-                                                        donationId: donationId,
-                                                      )));
-                                        } else {
-                                          print("Yawaaaaaaaaaaaaaa");
-                                        }
-                                        // Navigator.pop(context);
+                                        // if (modeOfDelivery == "Drop-off") {
+                                        //   print('trueeeeee');
+                                        //   Navigator.push(
+                                        //       context,
+                                        //       MaterialPageRoute(
+                                        //           builder: (context) =>
+                                        //               GenerateQrButtonWidget(
+                                        //                 donationId: donationId,
+                                        //               )));
+                                        // } else {
+                                        //   print("Yawaaaaaaaaaaaaaa");
+                                        // }
+                                        Navigator.pop(context);
                                       }
                                     }
                                   }
