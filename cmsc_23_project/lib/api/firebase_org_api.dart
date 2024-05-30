@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class FirebaseUserAPI {
+class FirebaseOrgAPI {
   static final FirebaseFirestore db = FirebaseFirestore.instance;
 
   // Future<String> addTodo(Map<String, dynamic> todo) async {
@@ -12,23 +12,39 @@ class FirebaseUserAPI {
   //     return "Error in ${e.code}: ${e.message}";
   //   }
   // }
-  Future<String> addUser(Map<String, dynamic> user) async {
+  Future<String> addOrg(
+    Map<String, dynamic> org,
+  ) async {
     try {
-      await db.collection("users").add(user);
+      DocumentReference orgDoc = await db.collection("organizations").add(org);
 
-      return "Successfully added!";
+      // if (donations != null) {
+      //   //create a subcollection for donations within this document
+      //   CollectionReference donationSubCollection =
+      //       orgDoc.collection("donations");
+      //   await donationSubCollection.add(null);
+      // }
+      return orgDoc.id; //id of the organization
+      // return "Successfully added!";
     } on FirebaseException catch (e) {
       return "Error in ${e.code}: ${e.message}";
     }
   }
 
-  Stream<QuerySnapshot> getAllUsers() {
-    return db.collection("users").snapshots();
+  Stream<QuerySnapshot> getAllOrg() {
+    return db.collection("organizations").snapshots();
   }
 
-  Future<String> deleteUser(String id) async {
+  // get all documents in the 'organizations' collection
+  Future<Map<String, dynamic>> fetchAllOrg() {
+    return db.collection("organizations").doc().get().then((value) {
+      return value.data() as Map<String, dynamic>;
+    });
+  }
+
+  Future<String> deleteOrg(String id) async {
     try {
-      await db.collection("users").doc(id).delete();
+      await db.collection("organizations").doc(id).delete();
 
       return "Successfully deleted!";
     } on FirebaseException catch (e) {
@@ -36,31 +52,17 @@ class FirebaseUserAPI {
     }
   }
 
-  Future<String> addDonationToUser(String userId, String donationId) async {
+  Future<String> addDonation(
+      String orgId, Map<String, dynamic> donation) async {
     try {
-      await db.collection("users").doc(userId).update({
-        'listDonations': FieldValue.arrayUnion([donationId])
-      });
-      return "Successfully added donation to user!";
-    } on FirebaseException catch (e) {
-      return "Error in ${e.code}: ${e.message}";
-    }
-  }
+      DocumentReference orgDoc = await db
+          .collection("organizations")
+          .doc(orgId)
+          .collection("donations")
+          .add(donation);
 
-  Future<String> getOrgId(String userId) async {
-    try {
-      DocumentSnapshot docSnapshot =
-          await db.collection("users").doc(userId).get();
-      if (docSnapshot.exists) {
-        Map<String, dynamic>? data =
-            docSnapshot.data() as Map<String, dynamic>?;
-        if (data != null && data.containsKey('orgDetails')) {
-          return data['orgDetails']['reference'];
-        } else {
-          return "User is not an organization";
-        }
-      }
-      return 'not found';
+      return orgDoc.id; // id of the donation
+      // return "Successfully added!";
     } on FirebaseException catch (e) {
       return "Error in ${e.code}: ${e.message}";
     }

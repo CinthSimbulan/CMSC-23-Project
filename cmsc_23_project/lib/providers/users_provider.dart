@@ -1,12 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cmsc_23_project/models/users_model.dart';
 import 'package:flutter/material.dart';
 import '../api/firebase_users_api.dart';
 
-class UsersListProvider with ChangeNotifier {
-  FirebaseUserAPI firebaseService = FirebaseUserAPI();
+class UsersListProvider extends ChangeNotifier {
+  // FirebaseUserAPI firebaseService = FirebaseUserAPI();
+  late FirebaseUserAPI firebaseService;
   late Stream<QuerySnapshot> _usersStream;
 
   UsersListProvider() {
+    firebaseService = FirebaseUserAPI();
     fetchUsers();
   }
   // getter
@@ -15,6 +18,26 @@ class UsersListProvider with ChangeNotifier {
   void fetchUsers() {
     _usersStream = firebaseService.getAllUsers();
     notifyListeners();
+  }
+
+  void addUser(myUser user) async {
+    String message = await firebaseService.addUser(user.toJson(user));
+    print(message);
+    notifyListeners();
+  }
+
+  void addDonationToUser(String userId, String donationId) async {
+    String message =
+        await firebaseService.addDonationToUser(userId, donationId);
+    print(message);
+    notifyListeners();
+  }
+
+  Future<String> fetchOrgId(String userId) async {
+    String message = await firebaseService.getOrgId(userId);
+    print(message);
+    notifyListeners();
+    return message;
   }
 
   // void addTodo(Todo item) async {

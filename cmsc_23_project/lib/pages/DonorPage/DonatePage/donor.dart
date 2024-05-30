@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cmsc_23_project/models/donation_model.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/address.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/contact.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/date&dtime.dart';
@@ -8,36 +9,41 @@ import 'package:cmsc_23_project/pages/DonorPage/DonatePage/image.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/itemcategory.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/numberinputfield.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/textfield.dart';
+import 'package:cmsc_23_project/providers/organizations_provider.dart';
+import 'package:cmsc_23_project/providers/users_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 
 class Donor extends StatefulWidget {
   static const routename = '/donor';
+  final String? orgId;
+  final String? userId;
 
-  const Donor({super.key});
+  const Donor({super.key, this.orgId, this.userId});
 
   @override
   State<Donor> createState() => _DonorState();
 }
 
-class Donation {
-  String category;
-  String modeOfDelivery;
-  int weight;
-  File? photo;
-  DateTime? selectedDateTime;
-  List<String> addresses;
-  String contactNumber;
+// class Donation {
+//   String category;
+//   String modeOfDelivery;
+//   int weight;
+//   File? photo;
+//   DateTime? selectedDateTime;
+//   List<String> addresses;
+//   String contactNumber;
 
-  Donation(
-      {required this.category,
-      required this.modeOfDelivery,
-      required this.weight,
-      this.photo,
-      this.selectedDateTime,
-      required this.addresses,
-      required this.contactNumber});
-}
+//   Donation(
+//       {required this.category,
+//       required this.modeOfDelivery,
+//       required this.weight,
+//       this.photo,
+//       this.selectedDateTime,
+//       required this.addresses,
+//       required this.contactNumber});
+// }
 
 class _DonorState extends State<Donor> {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -321,7 +327,7 @@ class _DonorState extends State<Donor> {
 
                             //Submit button/donate button
                             OutlinedButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   //check if all fields are filled up except the photo
                                   if (formKey.currentState!.validate()) {
                                     //check if at least one category is selected
@@ -329,27 +335,59 @@ class _DonorState extends State<Donor> {
                                         .any((element) => element['value'])) {
                                       //check if the date and time is not empty
                                       if (selectedDateTime != null) {
-                                        //create a donation object
-                                        Donation donation = Donation(
-                                            category: itemCategories
-                                                .where((element) =>
-                                                    element['value'])
-                                                .map((e) => e['category'])
-                                                .join(', '),
-                                            modeOfDelivery: modeOfDelivery,
-                                            weight: weight,
-                                            photo: photo,
-                                            selectedDateTime: selectedDateTime,
-                                            addresses: addresses,
-                                            contactNumber: contactNumber);
+                                        Map<String, dynamic> donation = {
+                                          'category': itemCategories
+                                              .where(
+                                                  (element) => element['value'])
+                                              .map((e) => e['category'])
+                                              .join(', '),
+                                          'modeOfDelivery': modeOfDelivery,
+                                          'weight': weight,
+                                          'photo': photo,
+                                          'selectedDateTime': selectedDateTime,
+                                          'addresses': addresses,
+                                          'contactNumber': contactNumber
+                                        };
+                                        //create a donation object. This will be stored sa
+                                        //subcollection donation ng organization using the id ng org IF ORG ung user type
+                                        // ID lang pala yung isostore sa donation array ng user
+                                        Donations tempDonation = Donations(
+                                            status: "Pending",
+                                            details: donation,
+                                            donorId:
+                                                widget.userId! //id ng donor
+                                            );
 
-                                        print(donation.addresses);
+                                        // Add the donation to the subcollection 'donations' of an organization
+                                        String donationId = await context
+                                            .read<OrganizationProvider>()
+                                            .addDonation(
+                                                widget.orgId!, tempDonation);
+
+                                        // Add the id of the donation to the user array of donations
+                                        context
+                                            .read<UsersListProvider>()
+                                            .addDonationToUser(
+                                                widget.userId!, donationId);
+                                        //print the donation object
+                                        print(tempDonation);
+                                        print(tempDonation.details['category']);
+                                        print(tempDonation
+                                            .details['modeOfDelivery']);
+                                        print(tempDonation.details['weight']);
+                                        print(tempDonation.details['photo']);
+                                        print(tempDonation
+                                            .details['selectedDateTime']);
+                                        print(
+                                            tempDonation.details['addresses']);
+                                        print(tempDonation
+                                            .details['contactNumber']);
+                                        print("contactnumber $contactNumber");
+
                                         setState(() {
                                           validate = true;
                                         });
-
-                                        //send the donation object to the database
-                                        //for now, just print the donation object
+                                        Navigator.pop(context);
                                       }
                                     }
                                   }
@@ -405,7 +443,7 @@ class _DonorState extends State<Donor> {
                                     const SizedBox(
                                       height: 10,
                                     ),
-                                    //display the summary of the donation
+                                    //display the summary of the donation from the created
                                     Column(
                                       children: [
                                         Text(

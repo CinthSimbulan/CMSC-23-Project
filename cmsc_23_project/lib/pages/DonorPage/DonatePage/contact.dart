@@ -28,6 +28,7 @@ class _ContactNumberInputState extends State<ContactNumberInput> {
         // hintText: 'e.g. 1234567890',
       ),
       validator: (value) {
+        print("xxxx");
         if (value == null || value.isEmpty) {
           return 'Please enter a contact number';
         }
@@ -37,9 +38,11 @@ class _ContactNumberInputState extends State<ContactNumberInput> {
         return null;
       },
       onChanged: (value) {
-        if (_formKey.currentState?.validate() == true) {
+        if (_formKey.currentState?.validate() == null) {
+          print(value);
           widget.callback(value);
         }
+        print('xxxss');
       },
     );
   }
