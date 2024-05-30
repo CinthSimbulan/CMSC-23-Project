@@ -1,5 +1,3 @@
-import 'dart:js';
-
 import 'package:cmsc_23_project/pages/SignInPage/signin.dart';
 import 'package:cmsc_23_project/pages/SignInPage/loadingpage.dart';
 import 'package:cmsc_23_project/pages/homepage.dart';
