@@ -76,8 +76,6 @@ class _HomepageState extends State<Homepage> {
           details['Type'] = userData['type'] ?? 'No type';
           //id of the current user
           final userId = snapshot.data!.docs[0].id;
-          print(userData);
-          print(details);
           return Scaffold(
             appBar: AppBar(
               title: Text(details['Type']!),
@@ -87,11 +85,17 @@ class _HomepageState extends State<Homepage> {
                 header,
                 const Divider(),
                 if (details['Type'] == 'Donor' || details['Type'] == 'Admin')
+                  headerTemplate("Organizations:"),
+                if (details['Type'] == 'Donor' || details['Type'] == 'Admin')
                   organizations(userId),
                 //update organization widget such that it will fetch
                 //organizations from firestore
                 if (details['Type'] == 'Organization')
                   donations(userData['orgDetails']['reference']),
+                if (details['Type'] == 'Admin') headerTemplate("Donors:"),
+                if (details['Type'] == 'Admin') donors(),
+                if (details['Type'] == 'Admin') headerTemplate("For approval:"),
+                if (details['Type'] == 'Admin') forApproval(),
                 // donations
                 //update donations widget such that it will fetch
                 //donations from firestore
@@ -105,7 +109,7 @@ class _HomepageState extends State<Homepage> {
   }
 
   Widget get header => Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.fromLTRB(8, 4, 8, 4),
         child: Row(
           children: [
             IconButton(
@@ -149,8 +153,20 @@ class _HomepageState extends State<Homepage> {
         ),
       );
 
+  Widget headerTemplate(String headerString) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+      child: Text(
+        headerString,
+        style: const TextStyle(
+          fontSize: 24,
+        ),
+      ),
+    );
+  }
+
   Widget organizations(userId) => Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
         child: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('organizations')
@@ -301,4 +317,110 @@ class _HomepageState extends State<Homepage> {
           ),
         ],
       ));
+
+  Widget donors() => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+        child: StreamBuilder(
+          stream: FirebaseFirestore.instance.collection('users').snapshots(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text("Error encountered! ${snapshot.error}"),
+              );
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return const Center(
+                child: Text("No users data found"),
+              );
+            } else {
+              return ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: snapshot.data!.docs.length,
+                itemBuilder: (context, index) {
+                  Map<String, dynamic> donorData =
+                      snapshot.data!.docs[index].data() as Map<String, dynamic>;
+
+                  final donorId = snapshot.data!.docs[index].id;
+                  print(donorData);
+                  if (donorData['type'] != "Donor") {
+                    return const SizedBox.shrink();
+                  } else {
+                    return ListTile(
+                      title: Text(donorData['name'] ?? 'No name'),
+                      onTap: () {
+                        // print(donorData.toString());
+                        print(donorData['name']);
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //       builder: (context) =>
+                        //           Donor(orgId: orgId, userId: userId)),
+                        // );
+                      },
+                    );
+                  }
+                },
+              );
+            }
+          },
+        ),
+      );
+
+  Widget forApproval() => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+        child: StreamBuilder(
+          stream: FirebaseFirestore.instance
+              .collection('organizations')
+              .snapshots(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: Text("Error encountered! ${snapshot.error}"),
+              );
+            } else if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return const Center(
+                child: Text("No organizations data found"),
+              );
+            } else {
+              return ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: snapshot.data!.docs.length,
+                itemBuilder: (context, index) {
+                  Map<String, dynamic> orgData =
+                      snapshot.data!.docs[index].data() as Map<String, dynamic>;
+
+                  final orgId = snapshot.data!.docs[index].id;
+                  print(orgData);
+                  if (orgData['isApproved'] == "Open") {
+                    return ListTile(
+                      title: Text(orgData['name'] ?? 'No name'),
+                      onTap: () {
+                        // print(orgData.toString());
+                        print(orgData['name']);
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //       builder: (context) =>
+                        //           Donor(orgId: orgId, userId: userId)),
+                        // );
+                      },
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                },
+              );
+            }
+          },
+        ),
+      );
 }
