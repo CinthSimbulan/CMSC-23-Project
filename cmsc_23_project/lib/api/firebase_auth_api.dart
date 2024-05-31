@@ -20,7 +20,7 @@ class FirebaseAuthApi {
           email: email, password: password);
       return "Success";
     } on FirebaseException catch (e) {
-      return ('Firebase Exception: ${e.code} : ${e.message}');
+      return ('${e.message}');
       // print('Firebase Exception: ${e.code} : ${e.message}');
     } catch (e) {
       return ('Error 001: $e');

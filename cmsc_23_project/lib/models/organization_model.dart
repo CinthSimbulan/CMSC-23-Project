@@ -5,7 +5,7 @@ class Organization {
   String name;
   String about;
   String status;
-  bool isApproved;
+  String isApproved;
   String imageUrl;
 
   // String? imageUrl; o kaya File! imageFile; for proof of legitimacy

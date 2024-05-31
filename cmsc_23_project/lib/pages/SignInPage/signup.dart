@@ -63,14 +63,6 @@ class _SignUpState extends State<SignUpPage> {
   }
 
   @override
-  void setState(VoidCallback fn) {
-    super.setState(fn);
-    print(details);
-    print(addresses);
-    // This code will be executed every time setState is called
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
@@ -326,7 +318,6 @@ class _SignUpState extends State<SignUpPage> {
         onPressed: () async {
           if (_formKey.currentState!.validate()) {
             _formKey.currentState!.save();
-            print(details);
 
             String? message = await context
                 .read<UserAuthProvider>()
@@ -343,7 +334,7 @@ class _SignUpState extends State<SignUpPage> {
                     name: organizationName!,
                     about: "about",
                     status: "Open",
-                    isApproved: false,
+                    isApproved: "Open",
                     imageUrl: photoURL);
 
                 //Add org to the 'organizations' collection
@@ -360,7 +351,7 @@ class _SignUpState extends State<SignUpPage> {
                   orgDetails: {
                     'name': organizationName,
                     'reference': orgId,
-                    'isApproved': false
+                    'isApproved': "Open"
                   },
                 );
 

@@ -21,12 +21,12 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   User? user;
   Organization? org;
-  Map<String, String> details = {
+  Map<String, dynamic> details = {
     "Type": "Donor",
     "Name": "name",
     "Username": "username",
     "Password": "password",
-    "Address": "address",
+    "Address/es": [],
     "Contact": "0999",
   };
 
@@ -71,11 +71,13 @@ class _HomepageState extends State<Homepage> {
           details['Type'] = userData['type'] ?? 'No type';
           details['Name'] = userData['name'] ?? 'No name';
           details['Username'] = userData['username'] ?? 'No username';
-          details['Address'] = userData['address'] ?? 'No address';
+          details['Address/es'] = userData['addresses'] ?? 'No address/es';
           details['Contact'] = userData['contactno'] ?? 'No contact';
           details['Type'] = userData['type'] ?? 'No type';
           //id of the current user
           final userId = snapshot.data!.docs[0].id;
+          print(userData);
+          print(details);
           return Scaffold(
             appBar: AppBar(
               title: Text(details['Type']!),
