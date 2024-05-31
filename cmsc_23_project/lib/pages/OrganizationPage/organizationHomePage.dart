@@ -18,12 +18,14 @@ class OrganizationHomepage extends StatefulWidget {
 class _OrganizationHomepageState extends State<OrganizationHomepage> {
   late String updatedropdownValue;
   late String linkdropdownValue;
+  late bool isDriveLinked;
 
   @override
   void initState() {
     super.initState();
     updatedropdownValue = widget.donationData?['status'] ?? '';
     linkdropdownValue = '';
+    isDriveLinked = widget.donationData?['driveId'] != null;
   }
 
   @override
@@ -64,7 +66,19 @@ class _OrganizationHomepageState extends State<OrganizationHomepage> {
         await donationRef.set({
           'donations': FieldValue.arrayUnion([donationData])
         }, SetOptions(merge: true));
-        print(donationData);
+        print(donationData['details']['id']);
+
+        DocumentReference trueDonationRef = FirebaseFirestore.instance
+            .collection('organizations')
+            .doc(widget.orgId)
+            .collection('donations')
+            .doc(donationData['details']['id']);
+        print('this trueDonationref');
+        print(trueDonationRef);
+        print('this trueDonationref');
+        await trueDonationRef.update({
+          'driveId': driveId,
+        });
         print('Donation status linked successfully!');
       } catch (error) {
         print('Error updating donation status: $error');
@@ -122,16 +136,19 @@ class _OrganizationHomepageState extends State<OrganizationHomepage> {
                   height: 2,
                   color: Colors.deepPurpleAccent,
                 ),
-                onChanged: (String? value) {
-                  setState(() {
-                    updatedropdownValue = value!;
-                  });
-                },
+                onChanged: updatedropdownValue == 'Completed'
+                    ? null // Disable dropdown if status is 'Completed'
+                    : (String? value) {
+                        setState(() {
+                          updatedropdownValue = value!;
+                        });
+                      },
                 items: [
                   'Pending',
                   'Confirmed',
                   'Scheduled for pick-up',
-                  'Cancelled'
+                  'Cancelled',
+                  'Completed'
                 ].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
@@ -143,10 +160,12 @@ class _OrganizationHomepageState extends State<OrganizationHomepage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    updateDonationStatus(updatedropdownValue);
-                    Navigator.pop(context);
-                  },
+                  onPressed: updatedropdownValue == 'Completed'
+                      ? null // Disable button if status is 'Completed'
+                      : () {
+                          updateDonationStatus(updatedropdownValue);
+                          Navigator.pop(context);
+                        },
                   child: const Text('Update Status'),
                 ),
               ),
@@ -169,11 +188,6 @@ class _OrganizationHomepageState extends State<OrganizationHomepage> {
                       child: Text(driveData['name'] ?? 'No name'),
                     );
                   }).toList();
-                  print("org id:");
-                  print(widget.orgId);
-                  print(driveDocs);
-                  print(driveItems);
-                  print(driveItems.map((item) => item.value).toList());
                   // Add an empty string as one of the choices
                   driveItems.insert(
                       0,
@@ -192,11 +206,13 @@ class _OrganizationHomepageState extends State<OrganizationHomepage> {
                       height: 2,
                       color: Colors.deepPurpleAccent,
                     ),
-                    onChanged: (String? value) {
-                      setState(() {
-                        linkdropdownValue = value!;
-                      });
-                    },
+                    onChanged: isDriveLinked
+                        ? null // Disable dropdown if drive is already linked
+                        : (String? value) {
+                            setState(() {
+                              linkdropdownValue = value!;
+                            });
+                          },
                     items: driveItems,
                   );
                 },
@@ -205,11 +221,13 @@ class _OrganizationHomepageState extends State<OrganizationHomepage> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    linkDonation(linkdropdownValue,
-                        widget.donationData as Map<String, dynamic>);
-                    Navigator.pop(context);
-                  },
+                  onPressed: isDriveLinked
+                      ? null // Disable button if drive is already linked
+                      : () {
+                          linkDonation(linkdropdownValue,
+                              widget.donationData as Map<String, dynamic>);
+                          Navigator.pop(context);
+                        },
                   child: const Text('Connect to a donation drive'),
                 ),
               ),
