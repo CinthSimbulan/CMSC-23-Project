@@ -1,12 +1,15 @@
 import 'package:cmsc_23_project/models/organization_model.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/donor.dart';
 import 'package:cmsc_23_project/pages/OrganizationPage/drive.dart';
+import 'package:cmsc_23_project/pages/OrganizationPage/editstatus.dart';
 import 'package:cmsc_23_project/pages/OrganizationPage/organizationHomePage.dart';
+import 'package:cmsc_23_project/pages/OrganizationPage/scanqr.dart';
 import 'package:cmsc_23_project/pages/profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cmsc_23_project/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:provider/provider.dart';
 
 class Homepage extends StatefulWidget {
@@ -225,35 +228,34 @@ class _HomepageState extends State<Homepage> {
             }
           },
         ),
-        // child: Column(
-        //   children: [
-        //     const Text("Organizations to Donate:"),
-        //     if (list_organizations.isEmpty)
-        //       Padding(
-        //         padding: const EdgeInsets.all(8),
-        //         child: Center(
-        //           child: Text(
-        //             'No Organization to Donate',
-        //           ),
-        //         ),
-        //       )
-        //     else
-        //       ListView.builder(
-        //         physics: const NeverScrollableScrollPhysics(),
-        //         shrinkWrap: true,
-        //         itemCount: list_organizations.length,
-        //         itemBuilder: (context, index) {
-        //           return ListTile(
-        //             title: Text(list_organizations[index]),
-        //             onTap: () {
-        //               print(list_organizations[index]);
-        //             },
-        //           );
-        //         },
-        //       ),
-        //   ],
-        // ),
       );
+
+  String _scanResult = ''; //for result of scan
+  //method for scanning
+  Future<String> scanQRCode() async {
+    String scanResult;
+    try {
+      scanResult = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.QR);
+    } catch (e) {
+      scanResult = 'Failed to get platform version.';
+    }
+
+    // Navigate to the form page if the scan result matches expected data
+    setState(() {
+      _scanResult = scanResult;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => EditStatus(
+            donationId: _scanResult,
+          ),
+        ),
+      );
+    });
+
+    return '';
+  }
 
   //homepage of organization
   //this should show a clickable 'donations' which will navigate to a new page that shows the list of donations of the current org
@@ -262,17 +264,29 @@ class _HomepageState extends State<Homepage> {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DrivePage(
-                      orgId: orgId,
-                    ),
-                  ));
-            },
-            child: const Text('Donation drive'),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              /// donation drive button
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DrivePage(
+                          orgId: orgId,
+                        ),
+                      ));
+                },
+                child: const Text('Donation drive'),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              //button for scan qr
+              ElevatedButton(
+                  onPressed: scanQRCode, child: const Text("Scan a QR code")),
+            ],
           ),
           const SizedBox(height: 16),
           StreamBuilder(
@@ -309,9 +323,6 @@ class _HomepageState extends State<Homepage> {
                     return ListTile(
                       title: Text(donationId ?? 'No name'),
                       onTap: () {
-                        print(donationData.toString());
-                        print(donationData['details']['contactNumber']);
-                        print(orgId);
                         Navigator.push(
                           context,
                           MaterialPageRoute(

@@ -26,12 +26,15 @@ class _ScanQrPageState extends State<ScanQrPage> {
     });
 
     // Navigate to the form page if the scan result matches expected data
-    if (_scanResult == 'EditStatus') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => EditStatus()),
-      );
-    }
+    // if (_scanResult == 'EditStatus') {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => EditStatus(
+                donationId: _scanResult,
+              )),
+    );
+    // }
   }
 
   @override

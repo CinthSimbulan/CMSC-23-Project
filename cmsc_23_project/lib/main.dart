@@ -1,3 +1,4 @@
+import 'package:cmsc_23_project/pages/DonorPage/DonatePage/generate.dart';
 import 'package:cmsc_23_project/pages/OrganizationPage/addImageDrive.dart';
 import 'package:cmsc_23_project/pages/OrganizationPage/adddrive.dart';
 import 'package:cmsc_23_project/pages/OrganizationPage/drive.dart';
@@ -61,7 +62,9 @@ class MyApp extends StatelessWidget {
         Drivedetails.routename: (context) => const Drivedetails(),
         Addimagedrive.routename: (context) => const Addimagedrive(),
         SignInPage.routename: (context) => const SignInPage(),
-        Loadingpage.routename: (context) => const Loadingpage()
+        Loadingpage.routename: (context) => const Loadingpage(),
+        GenerateQrButtonWidget.routename: (context) =>
+            const GenerateQrButtonWidget(),
       },
     );
   }
