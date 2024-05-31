@@ -334,7 +334,7 @@ class _SignUpState extends State<SignUpPage> {
                     name: organizationName!,
                     about: "about",
                     status: "Open",
-                    isApproved: false,
+                    isApproved: "Open",
                     imageUrl: photoURL);
 
                 //Add org to the 'organizations' collection
@@ -351,7 +351,7 @@ class _SignUpState extends State<SignUpPage> {
                   orgDetails: {
                     'name': organizationName,
                     'reference': orgId,
-                    'isApproved': false
+                    'isApproved': "Open"
                   },
                 );
 
