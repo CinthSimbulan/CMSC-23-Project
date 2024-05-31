@@ -170,11 +170,6 @@ class _OrganizationHomepageState extends State<OrganizationHomepage> {
                       child: Text(driveData['name'] ?? 'No name'),
                     );
                   }).toList();
-                  print("org id:");
-                  print(widget.orgId);
-                  print(driveDocs);
-                  print(driveItems);
-                  print(driveItems.map((item) => item.value).toList());
                   // Add an empty string as one of the choices
                   driveItems.insert(
                       0,

@@ -320,19 +320,41 @@ class _DonorState extends State<Donor> {
                             //Submit button/donate button
                             OutlinedButton(
                                 onPressed: () async {
+                                  print('address');
+                                  print(addresses.isEmpty); //true
                                   print('contact');
-                                  print(contactNumber);
+                                  print(contactNumber); // ''
+                                  print('photo');
+                                  print(photo); //null
+                                  // if (modeOfDelivery == "Drop-off") {
+                                  //   addresses.add('');
+                                  //   // contactNumber = '';
+                                  // }
+                                  print('wait');
+                                  print(weight);
                                   //check if all fields are filled up except the photo
+                                  print('before validation');
                                   if (formKey.currentState!.validate()) {
+                                    print('validated');
                                     //check if at least one category is selected
                                     if (itemCategories
                                         .any((element) => element['value'])) {
+                                      print("may category");
+
                                       //check if the date and time is not empty
-                                      if (selectedDateTime != null) {
-                                        //add the photo of the donation to storage
-                                        String photoUrl = await context
-                                            .read<ImageUploadProvider>()
-                                            .uploadImage(photo!, "donations");
+                                      if (selectedDateTime != null &&
+                                          weight > 0) {
+                                        print("capable to donate");
+                                        String photoUrl = '';
+                                        if (photo != null) {
+                                          //add the photo of the donation to storage
+                                          photoUrl = await context
+                                              .read<ImageUploadProvider>()
+                                              .uploadImage(photo!, "donations");
+                                        } else {
+                                          //no photo uploaded.
+                                          photoUrl = null.toString();
+                                        }
 
                                         // donation details
                                         Map<String, dynamic> donation = {
@@ -384,21 +406,29 @@ class _DonorState extends State<Donor> {
 
                                         print(modeOfDelivery);
                                         // If modeOfDelivery == drop-off after donating, the app wil redirect to a page where the user can generate a QR code
-                                        // if (modeOfDelivery == "Drop-off") {
-                                        //   print('trueeeeee');
-                                        //   Navigator.push(
-                                        //       context,
-                                        //       MaterialPageRoute(
-                                        //           builder: (context) =>
-                                        //               GenerateQrButtonWidget(
-                                        //                 donationId: donationId,
-                                        //               )));
-                                        // } else {
-                                        //   print("Yawaaaaaaaaaaaaaa");
-                                        // }
-                                        Navigator.pop(context);
+                                        if (modeOfDelivery == "Drop-off") {
+                                          print('trueeeeee');
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      GenerateQrButtonWidget(
+                                                        donationId: donationId,
+                                                      )));
+
+                                          print("napasok");
+                                        } else {
+                                          print("Yawaaaaaaaaaaaaaa");
+                                          Navigator.pop(context);
+                                        }
+                                      } else {
+                                        print("no date");
                                       }
+                                    } else {
+                                      print("no category");
                                     }
+                                  } else {
+                                    print('not validated');
                                   }
                                 },
                                 child: const Text("Donate",

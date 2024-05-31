@@ -2,6 +2,7 @@ import 'package:cmsc_23_project/pages/DonorPage/DonatePage/qrcode.dart';
 import 'package:flutter/material.dart';
 
 class GenerateQrButtonWidget extends StatefulWidget {
+  static const routename = '/generateQr';
   final String? donationId;
 
   const GenerateQrButtonWidget({super.key, this.donationId});
@@ -23,7 +24,7 @@ class _GenerateQrButtonWidgetState extends State<GenerateQrButtonWidget> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => QrCodeWidget(data: "EditStatus"),
+                builder: (context) => QrCodeWidget(data: widget.donationId!),
               ),
             );
           },

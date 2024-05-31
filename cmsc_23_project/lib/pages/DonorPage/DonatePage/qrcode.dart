@@ -28,10 +28,9 @@ class QrCodeWidget extends StatelessWidget {
           //button to save qr code in phone.
           ElevatedButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Placeholder()),
-              );
+              //save functionality in phone
+
+              Navigator.popUntil(context, ModalRoute.withName('/loading'));
             },
             child: const Text('Save QR Code'),
           ),
