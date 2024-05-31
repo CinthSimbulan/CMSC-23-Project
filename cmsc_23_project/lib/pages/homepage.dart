@@ -196,19 +196,21 @@ class _HomepageState extends State<Homepage> {
 
                   final orgId = snapshot.data!.docs[index].id;
 
-                  return ListTile(
-                    title: Text(orgData['name'] ?? 'No name'),
-                    onTap: () {
-                      print(orgData.toString());
-                      print(orgData['name']);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                Donor(orgId: orgId, userId: userId)),
-                      );
-                    },
-                  );
+                  if (orgData['isApproved'] == "Approved") {
+                    return ListTile(
+                      title: Text(orgData['name'] ?? 'No name'),
+                      onTap: () {
+                        print(orgData.toString());
+                        print(orgData['name']);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  Donor(orgId: orgId, userId: userId)),
+                        );
+                      },
+                    );
+                  }
                 },
               );
             }
