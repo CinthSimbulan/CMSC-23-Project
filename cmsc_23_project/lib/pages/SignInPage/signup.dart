@@ -6,6 +6,7 @@ import 'package:cmsc_23_project/models/organization_model.dart';
 import 'package:cmsc_23_project/models/users_model.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/image.dart';
 import 'package:cmsc_23_project/providers/auth_provider.dart';
+import 'package:cmsc_23_project/providers/image_provider.dart';
 import 'package:cmsc_23_project/providers/organizations_provider.dart';
 import 'package:cmsc_23_project/providers/users_provider.dart';
 import 'package:flutter/material.dart';
@@ -304,24 +305,16 @@ class _SignUpState extends State<SignUpPage> {
 
             if (message == "Success") {
               if (isOrganization) {
-                Map<String, dynamic> tempDetails = {
-                  'category': "Food",
-                  'modeOfDelivery': "modeOfDelivery",
-                  'weight': "weight",
-                  'photo': "photo",
-                  'selectedDateTime': "selectedDateTime",
-                  'addresses': "addresses",
-                  'contactNumber': "contactNumber"
-                };
-
-                // Donations tempDonation = Donations(
-                //     status: "Pending", details: tempDetails, donorId: "");
+                String photoURL = await context
+                    .read<ImageUploadProvider>()
+                    .uploadImage(photo!, 'org_proof_of_legitimacy');
 
                 Organization tempOrg = Organization(
                     name: organizationName!,
                     about: "about",
                     status: "Open",
-                    isApproved: false);
+                    isApproved: false,
+                    imageUrl: photoURL);
 
                 //Add org to the 'organizations' collection
                 String orgId =

@@ -1,31 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class FirebaseOrgAPI {
   static final FirebaseFirestore db = FirebaseFirestore.instance;
 
-  // Future<String> addTodo(Map<String, dynamic> todo) async {
-  //   try {
-  //     await db.collection("todos").add(todo);
-
-  //     return "Successfully added!";
-  //   } on FirebaseException catch (e) {
-  //     return "Error in ${e.code}: ${e.message}";
-  //   }
-  // }
   Future<String> addOrg(
     Map<String, dynamic> org,
   ) async {
     try {
       DocumentReference orgDoc = await db.collection("organizations").add(org);
-
-      // if (donations != null) {
-      //   //create a subcollection for donations within this document
-      //   CollectionReference donationSubCollection =
-      //       orgDoc.collection("donations");
-      //   await donationSubCollection.add(null);
-      // }
       return orgDoc.id; //id of the organization
-      // return "Successfully added!";
     } on FirebaseException catch (e) {
       return "Error in ${e.code}: ${e.message}";
     }
@@ -68,23 +52,26 @@ class FirebaseOrgAPI {
     }
   }
 
-  // Future<String> editTodo(String id, String title) async {
-  //   try {
-  //     await db.collection("todos").doc(id).update({"title": title});
+  //Add image reference to the donation details
+  Future<String> addImageToDonation(String orgId, String donationId) async {
+    try {
+      //get reference to the image in the 'donations' folder
+      firebase_storage.Reference storageRef =
+          firebase_storage.FirebaseStorage.instance.ref().child('donations');
+      //get the url of the image
+      String url = await storageRef.getDownloadURL();
 
-  //     return "Successfully edited!";
-  //   } on FirebaseException catch (e) {
-  //     return "Error in ${e.code}: ${e.message}";
-  //   }
-  // }
+      //update the donation details with the url of the image
+      await db
+          .collection("organizations")
+          .doc(orgId)
+          .collection("donations")
+          .doc(donationId)
+          .update({"details.photo": url});
 
-  // Future<String> toggleStatus(String id, bool value) async {
-  //   try {
-  //     await db.collection("todos").doc(id).update({"completed": value});
-
-  //     return "Successfully toggled!";
-  //   } on FirebaseException catch (e) {
-  //     return "Error in ${e.code}: ${e.message}";
-  //   }
-  // }
+      return "Photo Reference Successfully added!";
+    } on FirebaseException catch (e) {
+      return "Error in ${e.code}: ${e.message}";
+    }
+  }
 }

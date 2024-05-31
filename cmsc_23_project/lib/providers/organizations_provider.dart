@@ -41,6 +41,7 @@ class OrganizationProvider extends ChangeNotifier {
     return message;
   }
 
+  // method to add a donation to the organization
   Future<String> addDonation(String orgId, Donations donation) async {
     String message =
         await firebaseService.addDonation(orgId, donation.toJson(donation));
@@ -49,16 +50,14 @@ class OrganizationProvider extends ChangeNotifier {
     return (message);
   }
 
-  // void addTodo(Todo item) async {
-  //   String message = await firebaseService.addTodo(item.toJson(item));
-  //   print(message);
-  //   notifyListeners();
-  // }
-
-  // void editTodo(String id, String newTitle) async {
-  //   await firebaseService.editTodo(id, newTitle);
-  //   notifyListeners();
-  // }
+  // add the url of the image to the details of the each donation of the org
+  Future<String> addImageToDonation(String orgId, String donationId) async {
+    String message =
+        await firebaseService.addImageToDonation(orgId, donationId);
+    print(message);
+    notifyListeners();
+    return message;
+  }
 
   void deleteOrg(String id) async {
     await firebaseService.deleteOrg(id);
