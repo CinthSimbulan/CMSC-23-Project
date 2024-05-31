@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cmsc_23_project/models/organization_model.dart';
+import 'package:cmsc_23_project/pages/OrganizationPage/organizationHomePage.dart';
 import 'package:cmsc_23_project/providers/auth_provider.dart';
 import 'package:cmsc_23_project/providers/organizations_provider.dart';
 import 'package:cmsc_23_project/providers/users_provider.dart';
@@ -51,8 +52,8 @@ class _ProfileState extends State<Profile> {
           .snapshots();
     }
 
-    if (widget.type!.startsWith('Approval:')) {
-      String orgId = widget.type!.substring('Approval:'.length);
+    if (widget.type!.startsWith('Organization')) {
+      String orgId = widget.type!.substring('Organization:'.length);
       return Scaffold(
         appBar: AppBar(
           title: const Text("For Approval"),
@@ -148,10 +149,12 @@ class _ProfileState extends State<Profile> {
                 }
               },
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [declineButton(orgId), approveButton(orgId)],
-            )
+            if (widget.type!.startsWith('OrganizationO'))
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [declineButton(orgId), approveButton(orgId)],
+              ),
+            if (widget.type!.startsWith('OrganizationA')) seeDonations(orgId),
           ],
         ),
       );
@@ -448,6 +451,60 @@ class _ProfileState extends State<Profile> {
             .doc(orgId)
             .update({'isApproved': "Declined"});
         Navigator.of(context).pop();
+      },
+    );
+  }
+
+  Widget seeDonations(String orgId) {
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection('organizations')
+          .doc(orgId)
+          .collection('donations')
+          .snapshots(),
+      builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text("Error encountered! ${snapshot.error}"),
+          );
+        } else if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return Center(
+            child: Text(orgId),
+          );
+        } else {
+          return ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              Map<String, dynamic> donationData =
+                  snapshot.data!.docs[index].data() as Map<String, dynamic>;
+
+              // final orgId = snapshot.data!.docs[index].id;
+              final donationId = snapshot.data!.docs[index].id;
+              return ListTile(
+                title: Text(donationId ?? 'No name'),
+                onTap: () {
+                  print(donationData.toString());
+                  print(donationData['details']['contactNumber']);
+                  print(orgId);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => OrganizationHomepage(
+                            orgId: orgId,
+                            donationId: donationId,
+                            donationData: donationData)),
+                  );
+                },
+              );
+            },
+          );
+        }
       },
     );
   }

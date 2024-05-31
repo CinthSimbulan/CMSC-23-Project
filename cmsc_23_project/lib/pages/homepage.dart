@@ -85,18 +85,27 @@ class _HomepageState extends State<Homepage> {
               children: [
                 header,
                 const Divider(),
-                if (details['Type'] == 'Donor' || details['Type'] == 'Admin')
+                if (details['Type'] == 'Donor')
                   headerTemplate("Organizations:"),
-                if (details['Type'] == 'Donor' || details['Type'] == 'Admin')
-                  organizations(userId),
+                if (details['Type'] == 'Donor') organizations(userId),
+                // admin
+                if (details['Type'] == 'Admin')
+                  headerTemplate("Approved Organizations:"),
+                if (details['Type'] == 'Admin') approvedOrgs(),
+                if (details['Type'] == 'Admin')
+                  headerTemplate("Declined Organizations:"),
+                if (details['Type'] == 'Admin') declinedOrgs(),
+
+                if (details['Type'] == 'Admin')
+                  headerTemplate("Orgs Need Approval:"),
+                if (details['Type'] == 'Admin') forApproval(),
                 //update organization widget such that it will fetch
                 //organizations from firestore
                 if (details['Type'] == 'Organization')
                   donations(userData['orgDetails']['reference']),
                 if (details['Type'] == 'Admin') headerTemplate("Donors:"),
                 if (details['Type'] == 'Admin') donors(),
-                if (details['Type'] == 'Admin') headerTemplate("For approval:"),
-                if (details['Type'] == 'Admin') forApproval(),
+
                 // donations
                 //update donations widget such that it will fetch
                 //donations from firestore
@@ -429,7 +438,7 @@ class _HomepageState extends State<Homepage> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => Profile(
-                                        type: "Approval:$orgId",
+                                        type: "OrganizationO$orgId",
                                       )));
                           setState(() {});
                         },
@@ -444,6 +453,158 @@ class _HomepageState extends State<Homepage> {
                     padding: EdgeInsets.fromLTRB(0, 4, 0, 24),
                     child: Center(
                       child: Text('No organizations to approve'),
+                    ),
+                  ),
+              ],
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  Widget approvedOrgs() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+      child: StreamBuilder(
+        stream:
+            FirebaseFirestore.instance.collection('organizations').snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text("Error encountered! ${snapshot.error}"),
+            );
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(
+              child: Text("No organizations data found"),
+            );
+          } else {
+            // check if no org to approve
+            bool noOrgToApprove = true;
+            for (DocumentSnapshot doc in snapshot.data!.docs) {
+              Map<String, dynamic> orgData = doc.data() as Map<String, dynamic>;
+              if (orgData['isApproved'] == "Approved") {
+                noOrgToApprove = false;
+                break;
+              }
+            }
+
+            return Column(
+              children: [
+                ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    Map<String, dynamic> orgData = snapshot.data!.docs[index]
+                        .data() as Map<String, dynamic>;
+
+                    final orgId = snapshot.data!.docs[index].id;
+                    if (orgData['isApproved'] == "Approved") {
+                      return ListTile(
+                        title: Text(orgData['name'] ?? 'No name'),
+                        onTap: () {
+                          // print(orgData.toString());
+                          print(orgData['name']);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Profile(
+                                        type: "OrganizationA$orgId",
+                                      )));
+                          setState(() {});
+                        },
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
+                ),
+                if (noOrgToApprove)
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(0, 4, 0, 24),
+                    child: Center(
+                      child: Text('No approved organizations'),
+                    ),
+                  ),
+              ],
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  Widget declinedOrgs() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+      child: StreamBuilder(
+        stream:
+            FirebaseFirestore.instance.collection('organizations').snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text("Error encountered! ${snapshot.error}"),
+            );
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(
+              child: Text("No organizations data found"),
+            );
+          } else {
+            // check if no org to approve
+            bool noOrgToApprove = true;
+            for (DocumentSnapshot doc in snapshot.data!.docs) {
+              Map<String, dynamic> orgData = doc.data() as Map<String, dynamic>;
+              if (orgData['isApproved'] == "Declined") {
+                noOrgToApprove = false;
+                break;
+              }
+            }
+
+            return Column(
+              children: [
+                ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    Map<String, dynamic> orgData = snapshot.data!.docs[index]
+                        .data() as Map<String, dynamic>;
+
+                    final orgId = snapshot.data!.docs[index].id;
+                    if (orgData['isApproved'] == "Declined") {
+                      return ListTile(
+                        title: Text(orgData['name'] ?? 'No name'),
+                        onTap: () {
+                          // print(orgData.toString());
+                          print(orgData['name']);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Profile(
+                                        type: "OrganizationD$orgId",
+                                      )));
+                          setState(() {});
+                        },
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
+                ),
+                if (noOrgToApprove)
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(0, 4, 0, 24),
+                    child: Center(
+                      child: Text('No approved organizations'),
                     ),
                   ),
               ],
