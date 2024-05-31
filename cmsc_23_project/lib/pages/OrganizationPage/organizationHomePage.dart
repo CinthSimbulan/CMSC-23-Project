@@ -131,7 +131,8 @@ class _OrganizationHomepageState extends State<OrganizationHomepage> {
                   'Pending',
                   'Confirmed',
                   'Scheduled for pick-up',
-                  'Cancelled'
+                  'Cancelled',
+                  'completed'
                 ].map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,

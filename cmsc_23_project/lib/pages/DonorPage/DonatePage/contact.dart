@@ -41,6 +41,8 @@ class _ContactNumberInputState extends State<ContactNumberInput> {
         if (_formKey.currentState?.validate() == null) {
           print(value);
           widget.callback(value);
+        } else {
+          widget.callback('');
         }
         print('xxxss');
       },

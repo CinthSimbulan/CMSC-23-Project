@@ -317,33 +317,11 @@ class _DonorState extends State<Donor> {
                                   ],
                                 )),
 
-                            // if (modeOfDelivery == "Drop-off") ...[
-                            //   //button that will generate a qr code
-                            //   OutlinedButton(
-                            //       onPressed: () {
-                            //         //call generate qr code function
-                            //         // QrCodeWidget(
-                            //         //   data: "hiiiiiiiiiiii",
-                            //         // );
-                            //         //navigate to the qr code screen
-                            //         Navigator.push(
-                            //           context,
-                            //           MaterialPageRoute(
-                            //               builder: (context) =>
-                            //                   QrCodeWidget(data: "EditStatus")),
-                            //         );
-                            //       },
-                            //       child: const Text("Generate QR Code",
-                            //           style: TextStyle(
-                            //               fontStyle: FontStyle.italic,
-                            //               fontWeight: FontWeight.w400,
-                            //               fontSize: 17))),
-                            //   SizedBox(height: 50),
-                            // ],
-
                             //Submit button/donate button
                             OutlinedButton(
                                 onPressed: () async {
+                                  print('contact');
+                                  print(contactNumber);
                                   //check if all fields are filled up except the photo
                                   if (formKey.currentState!.validate()) {
                                     //check if at least one category is selected
