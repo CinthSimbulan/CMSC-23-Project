@@ -42,6 +42,7 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
+    bool noOrgToApprove = true;
     //fetch user from provider
     user = context.read<UserAuthProvider>().user;
     //fetch user from firestore
@@ -345,7 +346,6 @@ class _HomepageState extends State<Homepage> {
                       snapshot.data!.docs[index].data() as Map<String, dynamic>;
 
                   final donorId = snapshot.data!.docs[index].id;
-                  print(donorData);
                   if (donorData['type'] != "Donor") {
                     return const SizedBox.shrink();
                   } else {
@@ -370,57 +370,79 @@ class _HomepageState extends State<Homepage> {
         ),
       );
 
-  Widget forApproval() => Padding(
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-        child: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection('organizations')
-              .snapshots(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.hasError) {
-              return Center(
-                child: Text("Error encountered! ${snapshot.error}"),
-              );
-            } else if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return const Center(
-                child: Text("No organizations data found"),
-              );
-            } else {
-              return ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: snapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                  Map<String, dynamic> orgData =
-                      snapshot.data!.docs[index].data() as Map<String, dynamic>;
-
-                  final orgId = snapshot.data!.docs[index].id;
-                  print(orgData);
-                  if (orgData['isApproved'] == "Open") {
-                    return ListTile(
-                      title: Text(orgData['name'] ?? 'No name'),
-                      onTap: () {
-                        // print(orgData.toString());
-                        print(orgData['name']);
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       builder: (context) =>
-                        //           Donor(orgId: orgId, userId: userId)),
-                        // );
-                      },
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                },
-              );
+  Widget forApproval() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+      child: StreamBuilder(
+        stream:
+            FirebaseFirestore.instance.collection('organizations').snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Text("Error encountered! ${snapshot.error}"),
+            );
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(
+              child: Text("No organizations data found"),
+            );
+          } else {
+            // check if no org to approve
+            bool noOrgToApprove = true;
+            for (DocumentSnapshot doc in snapshot.data!.docs) {
+              Map<String, dynamic> orgData = doc.data() as Map<String, dynamic>;
+              if (orgData['isApproved'] == "Open") {
+                noOrgToApprove = false;
+                break;
+              }
             }
-          },
-        ),
-      );
+
+            return Column(
+              children: [
+                ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    Map<String, dynamic> orgData = snapshot.data!.docs[index]
+                        .data() as Map<String, dynamic>;
+
+                    final orgId = snapshot.data!.docs[index].id;
+                    if (orgData['isApproved'] == "Open") {
+                      return ListTile(
+                        title: Text(orgData['name'] ?? 'No name'),
+                        onTap: () {
+                          // print(orgData.toString());
+                          print(orgData['name']);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Profile(
+                                        type: "Approval:$orgId",
+                                      )));
+                          setState(() {});
+                        },
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  },
+                ),
+                if (noOrgToApprove)
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(0, 4, 0, 24),
+                    child: Center(
+                      child: Text('No organizations to approve'),
+                    ),
+                  ),
+              ],
+            );
+          }
+        },
+      ),
+    );
+  }
 }
