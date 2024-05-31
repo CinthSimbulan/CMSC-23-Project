@@ -47,7 +47,7 @@ class _AddimagedriveState extends State<Addimagedrive> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Padding(
-                padding: EdgeInsets.symmetric(vertical: 55),
+                padding: const EdgeInsets.symmetric(vertical: 55),
                 child: Column(
                   children: [
                     const Text("Photo of Item: ",
@@ -81,7 +81,7 @@ class _AddimagedriveState extends State<Addimagedrive> {
 
                         print(widget.orgId);
                         //change the status to 'completed';
-                        updateDonationStatus('completed');
+                        updateDonationStatus('Completed');
 
                         Navigator.pop(context);
                       },
