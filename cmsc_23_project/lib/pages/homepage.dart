@@ -1,5 +1,6 @@
 import 'package:cmsc_23_project/models/organization_model.dart';
 import 'package:cmsc_23_project/pages/DonorPage/DonatePage/donor.dart';
+import 'package:cmsc_23_project/pages/OrganizationPage/drive.dart';
 import 'package:cmsc_23_project/pages/OrganizationPage/organizationHomePage.dart';
 import 'package:cmsc_23_project/pages/profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -229,51 +230,70 @@ class _HomepageState extends State<Homepage> {
   // and a clickable 'drives' which will navigate to a new page that shows the list of drives of the current org
   Widget donations(orgId) => Padding(
       padding: const EdgeInsets.all(16),
-      child: StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection('organizations')
-            .doc(orgId)
-            .collection('donations')
-            .snapshots(),
-        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Text("Error encountered! ${snapshot.error}"),
-            );
-          } else if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(
-              child: Text(orgId),
-            );
-          } else {
-            return ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: snapshot.data!.docs.length,
-              itemBuilder: (context, index) {
-                Map<String, dynamic> donationData =
-                    snapshot.data!.docs[index].data() as Map<String, dynamic>;
+      child: Column(
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DrivePage(
+                      orgId: orgId,
+                    ),
+                  ));
+            },
+            child: const Text('Donation drive'),
+          ),
+          const SizedBox(height: 16),
+          StreamBuilder(
+            stream: FirebaseFirestore.instance
+                .collection('organizations')
+                .doc(orgId)
+                .collection('donations')
+                .snapshots(),
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text("Error encountered! ${snapshot.error}"),
+                );
+              } else if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return Center(
+                  child: Text(orgId),
+                );
+              } else {
+                return ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: snapshot.data!.docs.length,
+                  itemBuilder: (context, index) {
+                    Map<String, dynamic> donationData =
+                        snapshot.data!.docs[index].data()
+                            as Map<String, dynamic>;
 
-                return ListTile(
-                  title: Text(donationData['donorId'] ?? 'No name'),
-                  
-                  onTap: () {
-                    print(donationData.toString());
-                    print(donationData['details']['contactNumber']);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => OrganizationHomepage(
-                              orgId: orgId, donationId: snapshot.data!.docs[index].id, donationData: donationData)),
+                    return ListTile(
+                      title: Text(donationData['donorId'] ?? 'No name'),
+                      onTap: () {
+                        print(donationData.toString());
+                        print(donationData['details']['contactNumber']);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => OrganizationHomepage(
+                                  orgId: orgId,
+                                  donationId: snapshot.data!.docs[index].id,
+                                  donationData: donationData)),
+                        );
+                      },
                     );
                   },
                 );
-              },
-            );
-          }
-        },
+              }
+            },
+          ),
+        ],
       ));
 }

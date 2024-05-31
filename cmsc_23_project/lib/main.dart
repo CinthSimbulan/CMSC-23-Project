@@ -1,3 +1,7 @@
+import 'package:cmsc_23_project/pages/OrganizationPage/addImageDrive.dart';
+import 'package:cmsc_23_project/pages/OrganizationPage/adddrive.dart';
+import 'package:cmsc_23_project/pages/OrganizationPage/drive.dart';
+import 'package:cmsc_23_project/pages/OrganizationPage/drivedetails.dart';
 import 'package:cmsc_23_project/pages/OrganizationPage/organizationHomePage.dart';
 import 'package:cmsc_23_project/pages/SignInPage/signin.dart';
 import 'package:cmsc_23_project/pages/SignInPage/loadingpage.dart';
@@ -48,7 +52,12 @@ class MyApp extends StatelessWidget {
         Homepage.routename: (context) => const Homepage(),
         Profile.routename: (context) => const Profile(),
         Donor.routename: (context) => const Donor(),
-        OrganizationHomepage.routename: (context) => const OrganizationHomepage(),
+        OrganizationHomepage.routename: (context) =>
+            const OrganizationHomepage(),
+        AddDrivePage.routename: (context) => const AddDrivePage(),
+        DrivePage.routename: (context) => const DrivePage(),
+        Drivedetails.routename: (context) => const Drivedetails(),
+        Addimagedrive.routename: (context) => const Addimagedrive(),
         SignInPage.routename: (context) => const SignInPage(),
         Loadingpage.routename: (context) => const Loadingpage()
       },
