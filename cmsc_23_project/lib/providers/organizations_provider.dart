@@ -50,6 +50,13 @@ class OrganizationProvider extends ChangeNotifier {
     return (message);
   }
 
+  Future<String> addDonationId(String orgId, String donationId) async {
+    String message = await firebaseService.addDonationId(orgId, donationId);
+    print(message);
+    notifyListeners();
+    return message;
+  }
+
   // add the url of the image to the details of the each donation of the org
   Future<String> addImageToDonation(String orgId, String donationId) async {
     String message =

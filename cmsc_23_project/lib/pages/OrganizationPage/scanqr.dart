@@ -1,4 +1,4 @@
-import 'package:cmsc_23_project/pages/OrgPage/editstatus.dart';
+import 'package:cmsc_23_project/pages/OrganizationPage/editstatus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
