@@ -19,12 +19,12 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   User? user;
 
-  Map<String, String> details = {
+  Map<String, dynamic> details = {
     "Type": "Donor",
     "Name": "name",
     "Username": "username",
     "Password": "password",
-    "Address": "address",
+    "Address/es": [],
     "Contact": "0999",
   };
 
@@ -61,10 +61,12 @@ class _ProfileState extends State<Profile> {
             details['Type'] = userData['type'] ?? 'No type';
             details['Name'] = userData['name'] ?? 'No name';
             details['Username'] = userData['username'] ?? 'No username';
-            details['Address'] = userData['address'] ?? 'No address';
+            details['Address/es'] = userData['addresses'] ?? 'No address/es';
             details['Contact'] = userData['contactno'] ?? 'No contact';
 
-            if (widget.type! == 'Donor') {
+            print(userData);
+            print(details);
+            if (widget.type! == 'Donor' || widget.type! == 'Admin') {
               return Column(
                 children: [
                   Padding(
@@ -76,39 +78,98 @@ class _ProfileState extends State<Profile> {
                       ),
                     ),
                   ),
-                  ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: details.length,
-                    itemBuilder: (context, index) {
-                      String key = details.keys.elementAt(index);
-                      return Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: Text(
-                                key,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: details.length,
+                      itemBuilder: (context, index) {
+                        String key = details.keys.elementAt(index);
+                        if (key == 'Address/es') {
+                          // address only
+                          return Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    key,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 1,
-                              child: Text(
-                                details[key]!,
-                                style: const TextStyle(
-                                  fontSize: 16,
+                                Expanded(
+                                  flex: 1,
+                                  child: ListView.builder(
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemCount: details['Address/es'].length,
+                                      itemBuilder:
+                                          (addressContext, addressIndex) {
+                                        // String addressKey = details.keys
+                                        //     .elementAt(index)[addressIndex];
+
+                                        return Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.all(0),
+                                              child: Text(
+                                                details['Address/es']
+                                                    [addressIndex]!,
+                                                style: const TextStyle(
+                                                  fontSize: 16,
+                                                ),
+                                              ),
+                                            ),
+                                            if (addressIndex <
+                                                details['Address/es'].length -
+                                                    1)
+                                              const Divider()
+                                          ],
+                                        );
+                                      }),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
-                      );
-                    },
+                          );
+                        } else {
+                          // other details
+                          return Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    key,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    details[key]!,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      },
+                    ),
                   ),
                 ],
               );
