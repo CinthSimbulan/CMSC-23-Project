@@ -52,6 +52,22 @@ class FirebaseOrgAPI {
     }
   }
 
+  //add the donationId to the details map of the donation instance
+  Future<String> addDonationId(String orgId, String donationId) async {
+    try {
+      await db
+          .collection("organizations")
+          .doc(orgId)
+          .collection("donations")
+          .doc(donationId)
+          .update({"details.id": donationId});
+
+      return "Successfully added!";
+    } on FirebaseException catch (e) {
+      return "Error in ${e.code}: ${e.message}";
+    }
+  }
+
   //Add image reference to the donation details
   Future<String> addImageToDonation(String orgId, String donationId) async {
     try {

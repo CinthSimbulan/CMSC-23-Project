@@ -68,6 +68,8 @@ class FirebaseUserAPI {
       Reference ref = storage.ref('org_proof_of_legitimacy/$fileName');
       if (folderPath == 'donations') {
         ref = storage.ref('donations/$fileName');
+      } else if (folderPath == 'drives') {
+        ref = storage.ref('drives/$fileName');
       }
 
       await ref.putFile(file);

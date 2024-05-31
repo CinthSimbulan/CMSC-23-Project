@@ -276,17 +276,20 @@ class _HomepageState extends State<Homepage> {
                         snapshot.data!.docs[index].data()
                             as Map<String, dynamic>;
 
+                    // final orgId = snapshot.data!.docs[index].id;
+                    final donationId = snapshot.data!.docs[index].id;
                     return ListTile(
-                      title: Text(donationData['donorId'] ?? 'No name'),
+                      title: Text(donationId ?? 'No name'),
                       onTap: () {
                         print(donationData.toString());
                         print(donationData['details']['contactNumber']);
+                        print(orgId);
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => OrganizationHomepage(
                                   orgId: orgId,
-                                  donationId: snapshot.data!.docs[index].id,
+                                  donationId: donationId,
                                   donationData: donationData)),
                         );
                       },
