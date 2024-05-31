@@ -25,7 +25,7 @@ class _HomepageState extends State<Homepage> {
     "Type": "Donor",
     "Name": "name",
     "Username": "username",
-    "Password": "password",
+    // "Password": "password",
     "Address/es": [],
     "Contact": "0999",
   };
@@ -352,8 +352,14 @@ class _HomepageState extends State<Homepage> {
                     return ListTile(
                       title: Text(donorData['name'] ?? 'No name'),
                       onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Profile(
+                                      type: "Donor:${donorData['username']}",
+                                    )));
                         // print(donorData.toString());
-                        print(donorData['name']);
+                        print(donorData['username']);
                         // Navigator.push(
                         //   context,
                         //   MaterialPageRoute(

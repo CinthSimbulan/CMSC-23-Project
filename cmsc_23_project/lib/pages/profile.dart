@@ -23,7 +23,7 @@ class _ProfileState extends State<Profile> {
     "Type": "Donor",
     "Name": "name",
     "Username": "username",
-    "Password": "password",
+    // "Password": "password",
     "Address/es": [],
     "Contact": "0999",
   };
@@ -38,10 +38,18 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     user = context.read<UserAuthProvider>().user;
-    Stream<QuerySnapshot> usersStream = FirebaseFirestore.instance
-        .collection('users')
-        .where('username', isEqualTo: user!.email!)
-        .snapshots();
+    Stream<QuerySnapshot> usersStream;
+    if (widget.type!.startsWith('Donor:')) {
+      usersStream = FirebaseFirestore.instance
+          .collection('users')
+          .where('username', isEqualTo: widget.type!.substring('Donor:'.length))
+          .snapshots();
+    } else {
+      usersStream = FirebaseFirestore.instance
+          .collection('users')
+          .where('username', isEqualTo: user!.email!)
+          .snapshots();
+    }
 
     if (widget.type!.startsWith('Approval:')) {
       String orgId = widget.type!.substring('Approval:'.length);
