@@ -84,16 +84,16 @@ class _HomepageState extends State<Homepage> {
               children: [
                 header,
                 const Divider(),
-                if (details['Type'] == 'Donor') ...{
-                  organizations(userId)
-                  //update organization widget such that it will fetch
-                  //organizations from firestore
-                } else ...{
-                  donations(userData['orgDetails']['reference'])
-                  // donations
-                  //update donations widget such that it will fetch
-                  //donations from firestore
-                },
+                if (details['Type'] == 'Donor' || details['Type'] == 'Admin')
+                  organizations(userId),
+                //update organization widget such that it will fetch
+                //organizations from firestore
+                if (details['Type'] == 'Organization')
+                  donations(userData['orgDetails']['reference']),
+                // donations
+                //update donations widget such that it will fetch
+                //donations from firestore
+                // }
               ],
             ),
           );

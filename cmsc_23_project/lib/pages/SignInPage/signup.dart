@@ -29,9 +29,10 @@ class _SignUpState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
   String? name;
   String? email;
-  List<String>? addresses = [];
+  List<String> addresses = [];
   String? contact;
   String? password;
+  bool isAdmin = false;
   bool isOrganization = false;
   String? organizationName;
   File? photo;
@@ -41,7 +42,6 @@ class _SignUpState extends State<SignUpPage> {
     "Type": "Donor",
     "Name": "",
     "Username": "",
-    "Address": "",
     "Contact": ""
   };
 
@@ -49,7 +49,7 @@ class _SignUpState extends State<SignUpPage> {
   void _addAddress() {
     if (_addressController.text.isNotEmpty) {
       setState(() {
-        addresses!.add(_addressController.text);
+        addresses.add(_addressController.text);
         _addressController.clear();
       });
     }
@@ -58,8 +58,16 @@ class _SignUpState extends State<SignUpPage> {
   //method to delete an address
   void _removeAddress(int index) {
     setState(() {
-      addresses!.removeAt(index);
+      addresses.removeAt(index);
     });
+  }
+
+  @override
+  void setState(VoidCallback fn) {
+    super.setState(fn);
+    print(details);
+    print(addresses);
+    // This code will be executed every time setState is called
   }
 
   @override
@@ -80,7 +88,8 @@ class _SignUpState extends State<SignUpPage> {
                   addressField,
                   contactField,
                   passwordField,
-                  organizationCheckbox,
+                  adminSwitch,
+                  if (!isAdmin) organizationCheckbox,
                   if (isOrganization) organizationNameField,
                   if (isOrganization) proofImage,
                   submitButton,
@@ -161,8 +170,8 @@ class _SignUpState extends State<SignUpPage> {
                     _addAddress();
                   }),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "This field is required";
+                    if (addresses.isEmpty) {
+                      return "Please add an address";
                     }
                     return null;
                   },
@@ -177,10 +186,10 @@ class _SignUpState extends State<SignUpPage> {
           SizedBox(height: 10),
           ListView.builder(
             shrinkWrap: true,
-            itemCount: addresses!.length,
+            itemCount: addresses.length,
             itemBuilder: (context, index) {
               return ListTile(
-                title: Text(addresses![index]),
+                title: Text(addresses[index]),
                 trailing: IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed: () => _removeAddress(index),
@@ -241,6 +250,25 @@ class _SignUpState extends State<SignUpPage> {
         ),
       );
 
+  // Switch button for Admin
+  Widget get adminSwitch => Padding(
+      padding: const EdgeInsets.only(bottom: 30),
+      child: Row(
+        children: [
+          const Text('Are you an admin?'),
+          Switch(
+            value: isAdmin,
+            onChanged: (bool value) {
+              setState(() {
+                isAdmin = value;
+                isOrganization = false;
+                value ? details['Type'] = "Admin" : details['Type'] = "Donor";
+              });
+            },
+          )
+        ],
+      ));
+
   // Checkbox for Organization if User is an Organization
   Widget get organizationCheckbox => CheckboxListTile(
         title: const Text('Are you an organization?'),
@@ -248,6 +276,9 @@ class _SignUpState extends State<SignUpPage> {
         onChanged: (bool? value) {
           setState(() {
             isOrganization = value!;
+            value
+                ? details['Type'] = "Organization"
+                : details['Type'] = "Donor";
           });
         },
       );
@@ -265,7 +296,6 @@ class _SignUpState extends State<SignUpPage> {
           onSaved: (value) => setState(() {
             organizationName = value;
             details['Organization'] = organizationName;
-            details['Type'] = "Organization";
           }),
           validator: (value) {
             if (isOrganization && (value == null || value.isEmpty)) {
@@ -324,7 +354,7 @@ class _SignUpState extends State<SignUpPage> {
                 myUser tempUser = myUser(
                   name: details['Name'],
                   username: details['Username'],
-                  addresses: addresses!,
+                  addresses: addresses,
                   contactno: details['Contact'],
                   type: details['Type'],
                   orgDetails: {
@@ -343,7 +373,7 @@ class _SignUpState extends State<SignUpPage> {
                 myUser tempUser = myUser(
                   name: details['Name'],
                   username: details['Username'],
-                  addresses: addresses!,
+                  addresses: addresses,
                   contactno: details['Contact'],
                   type: details['Type'],
                 );
