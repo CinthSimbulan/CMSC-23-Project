@@ -371,8 +371,6 @@ class _DonorState extends State<Donor> {
                                           'contactNumber': contactNumber
                                         };
                                         //create a donation object. This will be stored sa
-                                        //subcollection donation ng organization using the id ng org IF ORG ung user type
-                                        // ID lang pala yung isostore sa donation array ng user
                                         Donations tempDonation = Donations(
                                             status: "Pending",
                                             details: donation,
@@ -386,6 +384,14 @@ class _DonorState extends State<Donor> {
                                             .addDonation(
                                                 widget.orgId!, tempDonation);
 
+                                        //
+
+                                        //add the donationId to the map of details in each instance of donation in the donations collection
+                                        context
+                                            .read<OrganizationProvider>()
+                                            .addDonationId(
+                                                widget.orgId!, donationId);
+
                                         // Add the id of the donation to the user array of donations
                                         context
                                             .read<UsersListProvider>()
@@ -398,8 +404,6 @@ class _DonorState extends State<Donor> {
                                             .addImageToDonation(
                                                 widget.orgId!, donationId);
 
-                                        print(
-                                            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
                                         print(modeOfDelivery);
                                         // If modeOfDelivery == drop-off after donating, the app wil redirect to a page where the user can generate a QR code
                                         // if (modeOfDelivery == "Drop-off") {

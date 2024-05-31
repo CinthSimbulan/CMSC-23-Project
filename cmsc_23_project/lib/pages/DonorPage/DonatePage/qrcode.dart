@@ -1,4 +1,3 @@
-import 'package:cmsc_23_project/pages/OrgPage/scanqr.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 

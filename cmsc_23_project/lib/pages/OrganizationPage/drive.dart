@@ -173,6 +173,8 @@ class _DrivePageState extends State<DrivePage> {
                                   MaterialPageRoute(
                                       builder: (context) => Drivedetails(
                                             drive: drive,
+                                            driveId: driveId,
+                                            orgId: widget.orgId,
                                           )),
                                 );
                               },
